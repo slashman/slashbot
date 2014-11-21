@@ -1,7 +1,7 @@
 var config = {
-	channels: ["#fantasy-stories"],
+	channels: ["#slashbottest"],
 	server: "irc.freenode.net",
-	botName: "slashbot5"
+	botName: "slashbot6"
 };
 
 var irc = require("irc");
@@ -29,6 +29,25 @@ bot.addListener("message", function(from, to, text, message) {
 		};
 		story.push(storypart);
 		return;
+	} else if (text.indexOf("correct:") == 0){
+		if (story.length == 0){
+			bot.say(config.channels[0], "There's no story yet.");
+			return;
+		}
+		var storypart = story[story.length-1];
+		if (storypart.author === from){
+			var storyText = text.substring("correct:".length);
+			storypart = {
+				author: from,
+				story: storyText
+			};
+			story[story.length-1] = storypart;
+			bot.say(config.channels[0], "Corrected.");
+			return;	
+		} else {
+			bot.say(config.channels[0], "Sorry, only "+storypart.author+" can correct his fragment.");
+			return;
+		}
 	} else if (text.indexOf("slashbot") == 0){
 		if (text.indexOf("introduce yourself") > -1){
 			bot.say(config.channels[0], "I am the slashbot, I can tell you the [story so far], or the [latest] part. If you want to add something to the story, be sure to start your message with [story:] without the brackets. Have fun!");
