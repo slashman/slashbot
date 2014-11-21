@@ -1,7 +1,8 @@
+var channel = "#slashbottest";
 var config = {
-	channels: ["#slashbottest"],
+	channels: [channel],
 	server: "irc.freenode.net",
-	botName: "slashbot6"
+	botName: "slashbot7"
 };
 
 var irc = require("irc");
@@ -17,7 +18,7 @@ var bot = new irc.Client(config.server, config.botName, {
 bot.addListener("join", function(channel, who) {
 	if (who.indexOf("slash") > -1)
 		return;
-	bot.say(channel, who + ", welcome to the channel. I am the slashbot, I can tell you the [story so far], or the [latest] part. If you want to add something to the story, be sure to start your message with [story:] without the brackets. Have fun!");
+	say(who, who + ", welcome to the channel. I am teh slashbot, I can tell you the [story so far], or the [latest] part. To add something to the story start your message with [story:] without the brackets. Have fun!");
 	if (!playersMap[who])
 		players.push(who);
 });
@@ -33,57 +34,70 @@ bot.addListener("message", function(from, to, text, message) {
 		correctStoryPart(from, storyText);
 	} else if (text.indexOf("slashbot") == 0){
 		if (text.indexOf("introduce yourself") > -1){
-			introduce();
+			introduce(from);
+		} else if (text.indexOf("help") > -1){
+			help(from);
 		} else if (text.indexOf("joke") > -1){
 			joke();
 		} else	if (text.indexOf("Who is your creator?") > -1){
 			creator();
 		} else if (text.indexOf("latest") > -1){
-			latest();
+			latest(from);
 		} else if (text.indexOf("story so far") > -1){
-			fullStory();
+			fullStory(from);
+		} else if (text.indexOf("share the story") > -1){
+			fullStory(false);
 		} else {
-			wtf();
+			wtf(from);
 		}
 	}
 });
 
 function introduce(){
-	bot.say(config.channels[0], "I am the slashbot, I can tell you the [story so far], or the [latest] part. If you want to add something to the story, be sure to start your message with [story:] without the brackets. Have fun!");
+	share("I am the slashbot, I can tell you the [story so far], or the [latest] part. If you want to add something to the story, be sure to start your message with [story:] without the brackets. Have fun!");
 }
 
 function joke(){
-	bot.say(config.channels[0], "I am not a joker, I am an historian.");
+	share("I am not a joker, I am an historian.");
 }
 
 function creator(){
-	bot.say(config.channels[0], "The almighty Slash, of course.");
+	share("The almighty Slash, of course.");
 }
 
-function latest(){
+function latest(who){
 	if (story.length == 0){
-		bot.say(config.channels[0], "There's no story yet.");
+		say(who, "There's no story yet.");
 		return;
 	}
 	var storypart = story[story.length-1];
-	bot.say(config.channels[0], "Latest part of the story was from "+storypart.author+", he added: \""+storypart.story+"\"");
+	say(who, "Latest part of the story was from "+storypart.author+", he added: \""+storypart.story+"\"");
 }
 
-function fullStory(){
+function fullStory(who){
 	if (story.length == 0){
-		bot.say(config.channels[0], "There's no story yet.");
+		if (!who){
+			share("There's no story yet.");
+		} else {
+			say(who, "There's no story yet.");
+		}
 		return;
 	}
-	var fullStory = "";
+	if (!who){
+		share("This is the story so far:");
+	}
 	for (var i = 0; i < story.length; i++){
 		var storypart = story[i];
-		fullStory += storypart.story + ".\n";
+		if (!who){
+			share(storypart.story);
+		} else {
+			say(who, storypart.story);
+		}
 	}
-	bot.say(config.channels[0], "The story so far:\n"+fullStory);
 }
 
-function wtf(){
-	bot.say(config.channels[0], "I am a primitive bot, unable to honor your complex request.");
+function wtf(who){
+	share("I am a primitive bot, unable to honor your complex request.");
 }
 
 function addStoryPart(from, storyText){
@@ -92,11 +106,12 @@ function addStoryPart(from, storyText){
 		story: storyText
 	};
 	story.push(storypart);
+	say(from, "Added.");
 }
 
 function correctStoryPart(from, storyText){
 	if (story.length == 0){
-		bot.say(config.channels[0], "There's no story yet.");
+		say(from, "There's no story yet.");
 		return;
 	}
 	var storypart = story[story.length-1];
@@ -106,9 +121,25 @@ function correctStoryPart(from, storyText){
 			story: storyText
 		};
 		story[story.length-1] = storypart;
-		bot.say(config.channels[0], "Corrected.");
+		say(from, "Corrected.");
 
 	} else {
-		bot.say(config.channels[0], "Sorry, only "+storypart.author+" can correct his fragment.");
+		say(from, "Sorry, only "+storypart.author+" can correct his fragment.");
 	}
+}
+
+function help(who){
+	say(who, "[story:] Adds a new fragment to the story");
+	say(who, "[correct:] Corrects the last fragment of the story");
+	say(who, "[latest] Gets the latest fragment");
+	say(who, "[story so far] Gets the complete story.");
+	say(who, "[share the story] Shows the full store for everyone.");	
+}
+
+function say(who, text){
+	bot.notice(who, text);
+}
+
+function share(text){
+	bot.say(channel, text);
 }
