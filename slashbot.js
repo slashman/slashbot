@@ -1,11 +1,12 @@
-var channel = "#slashbottest";
+var channel = "#rpg-medallo";
 var config = {
 	channels: [channel],
 	server: "irc.freenode.net",
-	botName: "slashbot7"
+	botName: "slashbot-rpg-medallo"
 };
 
 var irc = require("irc");
+//var fs = require("fs");
 
 var story = new Array();
 var players = new Array();
@@ -47,9 +48,11 @@ bot.addListener("message", function(from, to, text, message) {
 			fullStory(from);
 		} else if (text.indexOf("share the story") > -1){
 			fullStory(false);
+		} else if (text.indexOf("next turn") > -1){
+			nextTurn();
 		} else {
 			wtf(from);
-		}
+		}	
 	}
 });
 
@@ -57,12 +60,17 @@ function introduce(){
 	share("I am the slashbot, I can tell you the [story so far], or the [latest] part. If you want to add something to the story, be sure to start your message with [story:] without the brackets. Have fun!");
 }
 
+function nextTurn(){
+	var randomPlayer = players[Math.floor(Math.random() * players.length)];
+	share("I suggest "+randomPlayer+" goes next.");
+}
+
 function joke(){
-	share("I am not a joker, I am an historian.");
+	share("I am not a joker, look for another bot.");
 }
 
 function creator(){
-	share("The almighty Slash, of course.");
+	share("Slash did, @slashie_ on twitter.");
 }
 
 function latest(who){
@@ -106,6 +114,8 @@ function addStoryPart(from, storyText){
 		story: storyText
 	};
 	story.push(storypart);
+	//var serializedStory = JSON.stringify(story);
+	//fs.writeFileSync('story.json', serializedStory, function (err) {if (err) throw err; console.log('Saved story.json');});
 	say(from, "Added.");
 }
 
@@ -133,6 +143,7 @@ function help(who){
 	say(who, "[correct:] Corrects the last fragment of the story");
 	say(who, "[latest] Gets the latest fragment");
 	say(who, "[story so far] Gets the complete story.");
+	say(who, "[next turn] Suggest who should do the next turn.");
 	say(who, "[share the story] Shows the full store for everyone.");	
 }
 
