@@ -1,16 +1,19 @@
-var channel = "#rpg-medallo";
+var channel = "#fantasy-stories";
 var config = {
 	channels: [channel],
 	server: "irc.freenode.net",
-	botName: "slashbot-rpg-medallo"
+	botName: "rolebot"
 };
 
 var irc = require("irc");
-//var fs = require("fs");
+var fs = require("fs");
 
 var story = new Array();
 var players = new Array();
 var playersMap = {};
+
+var turnModes = ["random", "roundRobin"];
+var turnMode = 0;
 
 var bot = new irc.Client(config.server, config.botName, {
 	channels: config.channels
@@ -50,6 +53,8 @@ bot.addListener("message", function(from, to, text, message) {
 			fullStory(false);
 		} else if (text.indexOf("next turn") > -1){
 			nextTurn();
+		} else if (text.indexOf("turn mode") > -1){
+			changeTurnMode();
 		} else {
 			wtf(from);
 		}	
@@ -61,12 +66,24 @@ function introduce(){
 }
 
 function nextTurn(){
-	var randomPlayer = players[Math.floor(Math.random() * players.length)];
-	share("I suggest "+randomPlayer+" goes next.");
+	if(turnModes[turnMode] == 'roundRobin'){
+		var randomPlayer = players[Math.floor(Math.random() * players.length)];
+		share("I suggest "+randomPlayer+" goes next.");
+	} else if (turnModes[turnMode] == 'random'){
+		var randomPlayer = players[Math.floor(Math.random() * players.length)];
+		share("I suggest "+randomPlayer+" goes next.");			
+	}	
+}
+
+function changeTurnMode(){
+	turnMode++;
+	if(turnMode==turnModes.length)
+		turnMode = 0;
+	share("New turn mode: " + turnModes[turnMode] + ".");
 }
 
 function joke(){
-	share("I am not a joker, look for another bot.");
+	share("This is no time for jokes, my friend.");
 }
 
 function creator(){
@@ -105,7 +122,7 @@ function fullStory(who){
 }
 
 function wtf(who){
-	share("I am a primitive bot, unable to honor your complex request.");
+	share("Perhaps you should rephrase. Or simply ask me for help.");
 }
 
 function addStoryPart(from, storyText){
@@ -113,10 +130,18 @@ function addStoryPart(from, storyText){
 		author: from,
 		story: storyText
 	};
-	story.push(storypart);
-	//var serializedStory = JSON.stringify(story);
-	//fs.writeFileSync('story.json', serializedStory, function (err) {if (err) throw err; console.log('Saved story.json');});
+	story.push(storypart);	
+	saveStory();	
 	say(from, "Added.");
+}
+
+function saveStory(){
+	var serializedStory = JSON.stringify(story);
+	console.log(serializedStory);
+	fs.writeFile('story.json', serializedStory, function (err) {
+        if (err) throw err;
+        console.log('It seems as if the file was saved, we shall see.');
+    });
 }
 
 function correctStoryPart(from, storyText){
@@ -131,8 +156,8 @@ function correctStoryPart(from, storyText){
 			story: storyText
 		};
 		story[story.length-1] = storypart;
+		saveStory();
 		say(from, "Corrected.");
-
 	} else {
 		say(from, "Sorry, only "+storypart.author+" can correct his fragment.");
 	}
