@@ -16,6 +16,13 @@ var turnModes = ["random", "roundRobin"];
 var turnMode = 0;
 var lastTurn = 0;
 
+if (fs.existsSync("story.json")) {
+	fs.readFile("story.json", "utf8", function (err, data) {
+	  if (err) throw err;
+	  story = JSON.parse(data);
+	});
+}
+
 var bot = new irc.Client(config.server, config.botName, {
 	channels: config.channels
 });
