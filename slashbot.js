@@ -2,7 +2,7 @@ var channel = "#fantasy-stories";
 var config = {
 	channels: [channel],
 	server: "irc.freenode.net",
-	botName: "slashbot"
+	botName: "rolebot"
 };
 
 var irc = require("irc");
@@ -72,11 +72,34 @@ bot.addListener("message", function(from, to, text, message) {
 			nextTurn();
 		} else if (text.indexOf("turn mode") > -1){
 			changeTurnMode();
-		} else {
+		} else if (text.indexOf("dice") > -1 || text.indexOf("throw") > -1){
+			dice(from, text);
+		}
+		else {
 			wtf(from);
 		}	
 	}
 });
+
+function dice(from, text){
+	var dieNotation = /(\d+)?d(\d+)([+-]\d+)?$/.exec(text);
+    if (!dieNotation) {
+        share("What's wrong with you, "+ from+ "? This is crap: " + text);
+    }
+
+    var amount = (typeof dieNotation[1] == 'undefined') ? 1 : parseInt(dieNotation[1]);
+    var faces = parseInt(dieNotation[2]);
+    var mods = (typeof dieNotation[3] == 'undefined') ? 0 : parseInt(dieNotation[3]);
+	
+	var diceArray = [];
+	var sum = 0;
+	for(var i = 0; i < amount; i++) {
+		var die = Math.floor(Math.random() * faces) + 1;
+		diceArray.push(die);
+		sum += die;
+	}
+	share("Throw = ["+diceArray+"], Avg = "+sum/amount+" Total+mods = "+(sum+mods));
+}
 
 function introduce(){
 	share("I am the slashbot, I can tell you the [story so far], or the [latest] part. If you want to add something to the story, be sure to start your message with [story:] without the brackets. Have fun!");
@@ -147,7 +170,7 @@ function fullStory(who){
 }
 
 function wtf(who){
-	share("Perhaps you should rephrase. Or simply ask me for help.");
+	share("Perhaps you need to rephrase... Or add behavior at: https://github.com/slashman/slashbot");
 }
 
 function addStoryPart(from, storyText){
