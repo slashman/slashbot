@@ -2,7 +2,7 @@ var channel = "#fantasy-stories";
 var config = {
 	channels: [channel],
 	server: "irc.freenode.net",
-	botName: "rolebot"
+	botName: "slashbot"
 };
 
 var irc = require("irc");
@@ -14,6 +14,7 @@ var playersMap = {};
 
 var turnModes = ["random", "roundRobin"];
 var turnMode = 0;
+var lastTurn = 0;
 
 var bot = new irc.Client(config.server, config.botName, {
 	channels: config.channels
@@ -23,8 +24,24 @@ bot.addListener("join", function(channel, who) {
 	if (who.indexOf("slash") > -1)
 		return;
 	say(who, who + ", welcome to the channel. I am teh slashbot, I can tell you the [story so far], or the [latest] part. To add something to the story start your message with [story:] without the brackets. Have fun!");
-	if (!playersMap[who])
-		players.push(who);
+	if (!playersMap[who] && who != config.botName){
+		console.log("pushing ", who);
+		players.push(who);		
+	}
+});
+
+bot.addListener("names", function (channel, nicks) {
+	console.log("channel: ", channel);
+	var playerArray = Object.keys(nicks);
+	console.log("players in channel: ", playerArray);
+	
+	for (var i = 0; i < playerArray.length; i++) {
+		if (!playersMap[playerArray[i]] && playerArray[i] != config.botName) {
+			console.log("pushing ", playerArray[i]);
+			players.push(playerArray[i]);
+		}
+	}
+	
 });
 
 bot.addListener("message", function(from, to, text, message) {
@@ -36,7 +53,7 @@ bot.addListener("message", function(from, to, text, message) {
 	} else if (text.indexOf("correct:") == 0){
 		var storyText = text.substring("correct:".length);
 		correctStoryPart(from, storyText);
-	} else if (text.indexOf("slashbot") == 0){
+	} else if (text.indexOf("bot") == 0){
 		if (text.indexOf("introduce yourself") > -1){
 			introduce(from);
 		} else if (text.indexOf("help") > -1){
@@ -66,13 +83,21 @@ function introduce(){
 }
 
 function nextTurn(){
+	var playerIndex = 0;
 	if(turnModes[turnMode] == 'roundRobin'){
-		var randomPlayer = players[Math.floor(Math.random() * players.length)];
-		share("I suggest "+randomPlayer+" goes next.");
+		playerIndex = lastTurn;
+		lastTurn++;
+
+		share(turnModes[turnMode]+": I suggest "+players[playerIndex]+" goes next." + playerIndex);
+		if (lastTurn >= players.length) {
+			lastTurn = 0;
+			share("Round complete.");
+		}
 	} else if (turnModes[turnMode] == 'random'){
-		var randomPlayer = players[Math.floor(Math.random() * players.length)];
-		share("I suggest "+randomPlayer+" goes next.");			
-	}	
+		playerIndex = Math.floor(Math.random() * players.length);
+		share(turnModes[turnMode]+": I suggest "+players[playerIndex]+" goes next.");
+	}
+	
 }
 
 function changeTurnMode(){
@@ -179,3 +204,7 @@ function say(who, text){
 function share(text){
 	bot.say(channel, text);
 }
+
+bot.addListener('error', function(message) {
+    console.log('error: ', message);
+});
