@@ -14,6 +14,14 @@ var playersMap = {};
 
 var turnModes = ["random", "roundRobin"];
 var turnMode = 0;
+var lastTurn = 0;
+
+if (fs.existsSync("story.json")) {
+	fs.readFile("story.json", "utf8", function (err, data) {
+	  if (err) throw err;
+	  story = JSON.parse(data);
+	});
+}
 
 var bot = new irc.Client(config.server, config.botName, {
 	channels: config.channels
@@ -23,8 +31,24 @@ bot.addListener("join", function(channel, who) {
 	if (who.indexOf("slash") > -1)
 		return;
 	say(who, who + ", welcome to the channel. I am teh slashbot, I can tell you the [story so far], or the [latest] part. To add something to the story start your message with [story:] without the brackets. Have fun!");
-	if (!playersMap[who])
-		players.push(who);
+	if (!playersMap[who] && who != config.botName){
+		console.log("pushing ", who);
+		players.push(who);		
+	}
+});
+
+bot.addListener("names", function (channel, nicks) {
+	console.log("channel: ", channel);
+	var playerArray = Object.keys(nicks);
+	console.log("players in channel: ", playerArray);
+	
+	for (var i = 0; i < playerArray.length; i++) {
+		if (!playersMap[playerArray[i]] && playerArray[i] != config.botName) {
+			console.log("pushing ", playerArray[i]);
+			players.push(playerArray[i]);
+		}
+	}
+	
 });
 
 bot.addListener("message", function(from, to, text, message) {
@@ -36,7 +60,7 @@ bot.addListener("message", function(from, to, text, message) {
 	} else if (text.indexOf("correct:") == 0){
 		var storyText = text.substring("correct:".length);
 		correctStoryPart(from, storyText);
-	} else if (text.indexOf("slashbot") == 0){
+	} else if (text.indexOf("bot") == 0){
 		if (text.indexOf("introduce yourself") > -1){
 			introduce(from);
 		} else if (text.indexOf("help") > -1){
@@ -55,24 +79,55 @@ bot.addListener("message", function(from, to, text, message) {
 			nextTurn();
 		} else if (text.indexOf("turn mode") > -1){
 			changeTurnMode();
-		} else {
+		} else if (text.indexOf("dice") > -1 || text.indexOf("throw") > -1){
+			dice(from, text);
+		}
+		else {
 			wtf(from);
 		}	
 	}
 });
+
+function dice(from, text){
+	var dieNotation = /(\d+)?d(\d+)([+-]\d+)?$/.exec(text);
+    if (!dieNotation) {
+        share("What's wrong with you, "+ from+ "? This is crap: " + text);
+    }
+
+    var amount = (typeof dieNotation[1] == 'undefined') ? 1 : parseInt(dieNotation[1]);
+    var faces = parseInt(dieNotation[2]);
+    var mods = (typeof dieNotation[3] == 'undefined') ? 0 : parseInt(dieNotation[3]);
+	
+	var diceArray = [];
+	var sum = 0;
+	for(var i = 0; i < amount; i++) {
+		var die = Math.floor(Math.random() * faces) + 1;
+		diceArray.push(die);
+		sum += die;
+	}
+	share("Throw = ["+diceArray+"], Avg = "+sum/amount+" Total+mods = "+(sum+mods));
+}
 
 function introduce(){
 	share("I am the slashbot, I can tell you the [story so far], or the [latest] part. If you want to add something to the story, be sure to start your message with [story:] without the brackets. Have fun!");
 }
 
 function nextTurn(){
+	var playerIndex = 0;
 	if(turnModes[turnMode] == 'roundRobin'){
-		var randomPlayer = players[Math.floor(Math.random() * players.length)];
-		share("I suggest "+randomPlayer+" goes next.");
+		playerIndex = lastTurn;
+		lastTurn++;
+
+		share(turnModes[turnMode]+": I suggest "+players[playerIndex]+" goes next." + playerIndex);
+		if (lastTurn >= players.length) {
+			lastTurn = 0;
+			share("Round complete.");
+		}
 	} else if (turnModes[turnMode] == 'random'){
-		var randomPlayer = players[Math.floor(Math.random() * players.length)];
-		share("I suggest "+randomPlayer+" goes next.");			
-	}	
+		playerIndex = Math.floor(Math.random() * players.length);
+		share(turnModes[turnMode]+": I suggest "+players[playerIndex]+" goes next.");
+	}
+	
 }
 
 function changeTurnMode(){
@@ -122,7 +177,7 @@ function fullStory(who){
 }
 
 function wtf(who){
-	share("Perhaps you should rephrase. Or simply ask me for help.");
+	share("Perhaps you need to rephrase... Or add behavior at: https://github.com/slashman/slashbot");
 }
 
 function addStoryPart(from, storyText){
@@ -179,3 +234,7 @@ function say(who, text){
 function share(text){
 	bot.say(channel, text);
 }
+
+bot.addListener('error', function(message) {
+    console.log('error: ', message);
+});
