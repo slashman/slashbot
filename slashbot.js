@@ -1,8 +1,9 @@
-var channel = "#fantasy-stories";
+var channel = "#foundrystories";
 var config = {
 	channels: [channel],
-	server: "irc.freenode.net",
-	botName: "rolebot"
+	server: "ffoundry.irc.slack.com",
+	botName: "slashbot",
+	password: "ffoundry.Dx6w1bi5H1po99cWwo61"
 };
 
 var irc = require("irc");
@@ -24,7 +25,7 @@ if (fs.existsSync("story.json")) {
 }
 
 var bot = new irc.Client(config.server, config.botName, {
-	channels: config.channels
+	channels: config.channels, password: config.password
 });
 
 bot.addListener("join", function(channel, who) {
