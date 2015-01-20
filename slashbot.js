@@ -68,7 +68,7 @@ bot.addListener("message", function(from, to, text, message) {
 			help(from);
 		} else if (text.indexOf("joke") > -1){
 			joke();
-		} else	if (text.indexOf("Who is your creator?") > -1){
+		} else	if (text.indexOf("creator") > -1){
 			creator();
 		} else if (text.indexOf("latest") > -1){
 			latest(from);
@@ -143,7 +143,7 @@ function joke(){
 }
 
 function creator(){
-	share("Slash did, @slashie_ on twitter.");
+	share("I am being created by the slashbot dev team at https://github.com/slashman/slashbot . Join if you will.");
 }
 
 function latest(who){
