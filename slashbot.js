@@ -119,14 +119,14 @@ function nextTurn(){
 		playerIndex = lastTurn;
 		lastTurn++;
 
-		share(turnModes[turnMode]+": I suggest "+players[playerIndex]+" goes next." + playerIndex);
+		share(turnModes[turnMode]+": I suggest @"+players[playerIndex]+" goes next." + playerIndex);
 		if (lastTurn >= players.length) {
 			lastTurn = 0;
 			share("Round complete.");
 		}
 	} else if (turnModes[turnMode] == 'random'){
 		playerIndex = Math.floor(Math.random() * players.length);
-		share(turnModes[turnMode]+": I suggest "+players[playerIndex]+" goes next.");
+		share(turnModes[turnMode]+": I suggest @"+players[playerIndex]+" goes next.");
 	}
 	
 }
