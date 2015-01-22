@@ -167,7 +167,9 @@ function fullStory(who){
 	if (!who){
 		share("This is the story so far:");
 	}
+	console.log('Contributions: '+story.length);
 	for (var i = 0; i < story.length; i++){
+		console.log('Sharing contribution: '+i);
 		var storypart = story[i];
 		if (!who){
 			share(storypart.story);
