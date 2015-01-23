@@ -205,7 +205,7 @@ Slashbot.prototype = {
 	say: function(who, text){
 		this.connector.say(who, text);
 	},
-	share: function(who, text){
+	share: function(text){
 		this.connector.share(text);
 	},
 }
