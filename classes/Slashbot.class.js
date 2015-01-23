@@ -1,21 +1,20 @@
-var fs = require("fs");
-
 function Slashbot(config){
 	this.playersMap = {};
 	this.turnModes = ["random", "roundRobin"];
 	this.turnMode = 0;
 	this.lastTurn = 0;
 	this.players = new Array();
-	this.story = new Array();
-	this._loadStory();
+	this.currentStoryFragments = [];
 	this.config = config;
 	this.connector = new config.connector(config);
+	this.persistence = new config.persistence(config);
 }
 
 module.exports = Slashbot;
 
 Slashbot.prototype = {
 	start: function(){
+		this.persistence.init();
 		this.connector.init(this);
 	},
 	channelJoined: function(channel, who){
@@ -24,7 +23,7 @@ Slashbot.prototype = {
 		this.say(who, who + ", welcome to the channel. I am teh slashbot, I can tell you the [story so far], or the [latest] part. To add something to the story start your message with [story:] without the brackets. Have fun!");
 		if (!this.playersMap[who]){
 			console.log("pushing ", who);
-			players.push(who);		
+			this.players.push(who);		
 		}
 	},
 	message: function(from, to, text){
@@ -49,6 +48,12 @@ Slashbot.prototype = {
 				this._latest(from);
 			} else if (text.indexOf("story so far") > -1){
 				this._fullStory(from);
+			} else if (text.indexOf("new story") > -1){
+				this._newStory(text);
+			} else if (text.indexOf("set story") > -1){
+				this._setStory(text);
+			} else if (text.indexOf("list stories") > -1){
+				this._listStories();
 			} else if (text.indexOf("share the story") > -1){
 				this._fullStory(false);
 			} else if (text.indexOf("next turn") > -1){
@@ -71,14 +76,6 @@ Slashbot.prototype = {
 				console.log("pushing "+ i + ' ' + players[i]);
 				this.players.push(players[i]);
 			}
-		}
-	},
-	_loadStory: function(){
-		if (fs.existsSync("story.json")) {
-			fs.readFile("story.json", "utf8", function (err, data) {
-			  if (err) throw err;
-			  this.story = JSON.parse(data);
-			});
 		}
 	},
 	_dice: function (from, text){
@@ -130,27 +127,27 @@ Slashbot.prototype = {
 		this.share("I am being created by the slashbot dev team at https://github.com/slashman/slashbot . Join if you will.");
 	},
 	_latest: function(who){
-		if (this.story.length == 0){
-			this.say(who, "There's no story yet.");
+		if (this.currentStoryFragments.length == 0){
+			this.say(who, "The current story has not begun");
 			return;
 		}
-		var storypart = this.story[this.story.length-1];
+		var storypart = this.currentStoryFragments[this.currentStoryFragments.length-1];
 		this.say(who, "Latest part of the story was from "+storypart.author+", he added: \""+storypart.story+"\"");
 	},
 	_fullStory: function(who){
-		if (this.story.length == 0){
+		if (this.currentStoryFragments.length == 0){
 			if (!who){
-				this.share("There's no story yet.");
+				this.share("The current story has not begun");
 			} else {
-				this.say(who, "There's no story yet.");
+				this.say(who, "The current story has not begun");
 			}
 			return;
 		}
 		if (!who){
 			this.share("This is the story so far:");
 		}
-		for (var i = 0; i < this.story.length; i++){
-			var storypart = this.story[i];
+		for (var i = 0; i < this.currentStoryFragments.length; i++){
+			var storypart = this.currentStoryFragments[i];
 			if (!who){
 				this.share(storypart.story);
 			} else {
@@ -162,35 +159,31 @@ Slashbot.prototype = {
 		this.share("Perhaps you need to rephrase... Or add behavior at: https://github.com/slashman/slashbot");
 	},
 	_addStoryPart: function (from, storyText){
+		if (!this.story){
+			this.say(from, "There's no story yet, you can ask me to create one using \"new story\"");
+			return;
+		}
 		var storypart = {
 			author: from,
 			story: storyText
 		};
-		this.story.push(storypart);	
-		this.saveStory();	
+		this.currentStoryFragments.push(storypart);	
+		this._saveStory();	
 		this.say(from, "Added.");
 	},
-	_saveStory: function(){
-		var serializedStory = JSON.stringify(this.story);
-		console.log(serializedStory);
-		fs.writeFile('story.json', serializedStory, function (err) {
-	        if (err) throw err;
-	        console.log('It seems as if the file was saved, we shall see.');
-	    });
-	},
 	_correctStoryPart: function (from, storyText){
-		if (this.story.length == 0){
-			this.say(from, "There's no story yet.");
+		if (this.currentStoryFragments.length == 0){
+			this.say(from, "The current story is empty.");
 			return;
 		}
-		var storypart = this.story[this.story.length-1];
+		var storypart = this.currentStoryFragments[this.currentStoryFragments.length-1];
 		if (storypart.author === from){
 			storypart = {
 				author: from,
 				story: storyText
 			};
-			this.story[this.story.length-1] = storypart;
-			this.saveStory();
+			this.currentStoryFragments[this.currentStoryFragments.length-1] = storypart;
+			this._saveStory();
 			this.say(from, "Corrected.");
 		} else {
 			this.say(from, "Sorry, only "+storypart.author+" can correct his fragment.");
@@ -210,4 +203,43 @@ Slashbot.prototype = {
 	share: function(text){
 		this.connector.share(text);
 	},
+	_newStory: function(text){
+		var storyName = text.substr(text.indexOf("new story")+"new story".length+1);
+		if (!storyName || storyName.trim() === ''){
+			this.share('I need a name for the story');
+			return;
+		}
+		this.story = this.persistence.createStory(storyName);
+		this.share('Let\'s create the story "'+this.story.name+'"');
+		this.currentStoryFragments = this.story.fragments;
+	},
+	_setStory: function (text){
+		var storyPIN = text.substr(text.indexOf("set story")+"set story".length+1);
+		if (!storyPIN || storyPIN.trim() === ''){
+			this.share('I need a PIN for the story');
+			return;
+		}
+		this.story = this.persistence.getStory(storyPIN);
+		if (!this.story){
+			this.share('I don\'t know a story with PIN ('+storyPIN+')');
+			return;
+		}
+		this.share('Let\'s continue the story "'+this.story.name+'"');
+		this.currentStoryFragments = this.story.fragments;
+	},
+	_listStories: function (text){
+		var stories = this.persistence.getStoriesList();
+		if (!stories || stories.length == 0){
+			this.share('I know no stories.');
+			return;
+		}
+		this.share('I know these stories:');
+		for (var i = 0; i < stories.length; i++){
+			var story = stories[i];
+			this.share(story.pin+" - "+story.name);
+		}
+	},
+	_saveStory: function(){
+		this.persistence.saveStory(this.story);
+	}
 }
