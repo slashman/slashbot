@@ -8,7 +8,8 @@
   },
   "dependencies": {
     "require": "*",
-    "node-irc": "*"
+    "node-irc": "*",
+    "mongoskin": "*"
   },
   "repository": {
     "type": "git",

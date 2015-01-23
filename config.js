@@ -1,5 +1,6 @@
 var IRCConnector = require("./classes/IRCConnector.class");
 var JSONConnector = require("./classes/persistence/JSONConnector.class");
+var MongoConnector = require("./classes/persistence/MongoConnector.class");
 
 // Sample Slack-thru-IRC config
 /*module.exports = {
@@ -17,5 +18,6 @@ module.exports = {
 	server: "verne.freenode.net",
 	botName: "slashbot",
 	connector: IRCConnector,
-	persistence: JSONConnector
+	persistence: MongoConnector,
+	dbURL: 'mongodb://localhost:27017/slashbot'
 };
