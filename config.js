@@ -5,7 +5,7 @@ module.exports = {
 	channel: "#slashbottest",
 	server: "ffoundry.irc.slack.com",
 	botName: "slashbotx",
-	password: "milkyway",
+	password: "ffoundry.MUr0IDVbPois5VgPtbYY",
 	connector: IRCConnector
 };
 
