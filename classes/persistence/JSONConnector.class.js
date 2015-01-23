@@ -6,10 +6,12 @@ function JSONConnector(){
 
 JSONConnector.prototype = {
 	init: function(){
+		var connector = this;
 		if (fs.existsSync("data.json")) {
 			fs.readFile("data.json", "utf8", function (err, data) {
-				if (err) throw err;
-				this.masterData = JSON.parse(data);
+				if (err) 
+					throw err;
+				connector.masterData = JSON.parse(data);
 			});
 		} else {
 			this.masterData = {
@@ -19,7 +21,7 @@ JSONConnector.prototype = {
 			this._saveAll();
 		}
 	},
-	createStory: function (storyName){
+	createStory: function (storyName, callback){
 		var newStory = {
 			name: storyName,
 			pin: this.masterData.currentPIN++,
@@ -27,17 +29,19 @@ JSONConnector.prototype = {
 		}
 		this.masterData.stories.push(newStory);
 		this._saveAll();
-		return newStory;
+		callback(newStory);
 	},
-	getStory: function (storyPIN){
+	getStory: function (storyPIN, callback){
 		for (var i = 0; i < this.masterData.stories.length; i++){
 			var story = this.masterData.stories[i];
-			if (story.pin == storyPIN)
-				return story;
+			if (story.pin == storyPIN){
+				callback(story);
+				return;
+			}
 		}
-		return false;
+		callback(false);
 	},
-	getStoriesList: function(){
+	getStoriesList: function(callback){
 		var ret = [];
 		for (var i = 0; i < this.masterData.stories.length; i++){
 			var story = this.masterData.stories[i];
@@ -47,7 +51,7 @@ JSONConnector.prototype = {
 			};
 			ret[i] = storyData
 		}
-		return ret;
+		callback(ret);
 	},
 	saveStory: function(story){
 		this._saveAll();

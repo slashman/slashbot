@@ -209,9 +209,12 @@ Slashbot.prototype = {
 			this.share('I need a name for the story');
 			return;
 		}
-		this.story = this.persistence.createStory(storyName);
-		this.share('Let\'s create the story "'+this.story.name+'"');
-		this.currentStoryFragments = this.story.fragments;
+		var slashbot = this;
+		this.persistence.createStory(storyName, function(story){
+			slashbot.story = story;
+			slashbot.share('Let\'s create the story "'+slashbot.story.name+'"');
+			slashbot.currentStoryFragments = slashbot.story.fragments;
+		});
 	},
 	_setStory: function (text){
 		var storyPIN = text.substr(text.indexOf("set story")+"set story".length+1);
@@ -219,25 +222,34 @@ Slashbot.prototype = {
 			this.share('I need a PIN for the story');
 			return;
 		}
-		this.story = this.persistence.getStory(storyPIN);
-		if (!this.story){
-			this.share('I don\'t know a story with PIN ('+storyPIN+')');
-			return;
-		}
-		this.share('Let\'s continue the story "'+this.story.name+'"');
-		this.currentStoryFragments = this.story.fragments;
+		var slashbot = this;
+		this.persistence.getStory(storyPIN, 
+			function (story){
+				slashbot.story = story;
+				if (!slashbot.story){
+					slashbot.share('I don\'t know a story with PIN ('+storyPIN+')');
+					return;
+				}
+				slashbot.share('Let\'s continue the story "'+slashbot.story.name+'"');
+				slashbot.currentStoryFragments = slashbot.story.fragments;
+			}
+		);
 	},
 	_listStories: function (text){
-		var stories = this.persistence.getStoriesList();
-		if (!stories || stories.length == 0){
-			this.share('I know no stories.');
-			return;
-		}
-		this.share('I know these stories:');
-		for (var i = 0; i < stories.length; i++){
-			var story = stories[i];
-			this.share(story.pin+" - "+story.name);
-		}
+		var slashbot = this;
+		this.persistence.getStoriesList( 
+			function(stories){
+				if (!stories || stories.length == 0){
+					slashbot.share('I know no stories.');
+					return;
+				}
+				slashbot.share('I know these stories:');
+				for (var i = 0; i < stories.length; i++){
+					var story = stories[i];
+					slashbot.share(story.pin+" - "+story.name);
+				}
+			}
+		);
 	},
 	_saveStory: function(){
 		this.persistence.saveStory(this.story);
