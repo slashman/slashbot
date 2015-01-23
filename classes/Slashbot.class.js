@@ -64,10 +64,12 @@ Slashbot.prototype = {
 	},
 	registerPlayers: function(players){
 		console.log("players in channel: ", players);
+		console.log(players.length);
 		for (var i = 0; i < players.length; i++) {
+			// console.log(i);
 			if (!this.playersMap[players[i]] && players[i] != this.config.botName) {
-				console.log("pushing ", players[i]);
-				players.push(players[i]);
+				console.log("pushing "+ i + ' ' + players[i]);
+				this.players.push(players[i]);
 			}
 		}
 	},
