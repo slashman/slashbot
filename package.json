@@ -1,0 +1,22 @@
+{
+  "name": "slashbot",
+  "version": "0.1.0",
+  "description": "A fun bot for role playing and stuff.",
+  "main": "slashbot.js",
+  "scripts": {
+    "start": "node slashbot.js"
+  },
+  "dependencies": {
+    "require": "*",
+    "node-irc": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/slashman/slashbot"
+  },
+  "author": "Santiago Zapata",
+  "contributors": [
+    "Gustavo Guevara",
+    "Rick Buitrago"
+  ]
+}
