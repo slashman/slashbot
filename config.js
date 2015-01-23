@@ -10,9 +10,9 @@ module.exports = {
 };
 
 // Sample plain IRC config
-module.exports = {
+/*module.exports = {
 	channel: "#slashbot",
 	server: "verne.freenode.net",
 	botName: "slashbot",
 	connector: IRCConnector
-};
+};*/
