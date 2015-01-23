@@ -21,7 +21,8 @@ Slashbot.prototype = {
 		if (who === this.config.botName)
 			return;
 		this.say(who, who + ", welcome to the channel. I am teh slashbot, I can tell you the [story so far], or the [latest] part. To add something to the story start your message with [story:] without the brackets. Have fun!");
-		if (!this.playersMap[who]){
+
+		if (channel != 'general' && !this.playersMap[who]){
 			console.log("pushing ", who);
 			this.players.push(who);		
 		}
@@ -58,6 +59,8 @@ Slashbot.prototype = {
 				this._fullStory(false);
 			} else if (text.indexOf("next turn") > -1){
 				this._nextTurn();
+			} else if (text.indexOf("current turn") > -1){
+				this._currentTurn();
 			} else if (text.indexOf("turn mode") > -1){
 				this._changeTurnMode();
 			} else if (text.indexOf("dice") > -1 || text.indexOf("throw") > -1){
@@ -71,7 +74,6 @@ Slashbot.prototype = {
 		console.log("players in channel: ", players);
 		console.log(players.length);
 		for (var i = 0; i < players.length; i++) {
-			// console.log(i);
 			if (!this.playersMap[players[i]] && players[i] != this.config.botName) {
 				console.log("pushing "+ i + ' ' + players[i]);
 				this.players.push(players[i]);
@@ -100,7 +102,8 @@ Slashbot.prototype = {
 	},
 	_nextTurn: function(){
 		var playerIndex = 0;
-		var turnMode = this.turnModes[this.turnMode]; 
+		var turnMode = this.turnModes[this.turnMode];
+		console.log("Choosing among " + this.players.length + " players...");
 		if(turnMode === 'roundRobin'){
 			playerIndex = this.lastTurn;
 			this.lastTurn++;
@@ -113,6 +116,9 @@ Slashbot.prototype = {
 			playerIndex = Math.floor(Math.random() * this.players.length);
 			this.share(turnMode+": I suggest @"+this.players[this.playerIndex]+" goes next.");
 		}
+	},
+	_currentTurn: function(){
+		this.share(this.players[this.lastTurn]);
 	},
 	_changeTurnMode: function(){
 		this.turnMode++;
