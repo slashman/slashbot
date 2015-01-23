@@ -1,5 +1,6 @@
 function Slashbot(config){
 	this.playersMap = {};
+	this.currentPlayer = "";
 	this.turnModes = ["random", "roundRobin"];
 	this.turnMode = 0;
 	this.lastTurn = 0;
@@ -21,8 +22,7 @@ Slashbot.prototype = {
 		if (who === this.config.botName)
 			return;
 		this.say(who, who + ", welcome to the channel. I am teh slashbot, I can tell you the [story so far], or the [latest] part. To add something to the story start your message with [story:] without the brackets. Have fun!");
-
-		if (channel != 'general' && !this.playersMap[who]){
+		if (!this.playersMap[who]){
 			console.log("pushing ", who);
 			this.players.push(who);		
 		}
@@ -107,18 +107,21 @@ Slashbot.prototype = {
 		if(turnMode === 'roundRobin'){
 			playerIndex = this.lastTurn;
 			this.lastTurn++;
-			this.share(turnMode+": I suggest @"+this.players[playerIndex]+" goes next." + playerIndex);
+			this.share(turnMode+": I suggest @"+this.players[playerIndex]+" goes next.");
 			if (this.lastTurn >= this.players.length) {
 				this.lastTurn = 0;
 				this.share("Round complete.");
 			}
 		} else if (turnMode === 'random'){
 			playerIndex = Math.floor(Math.random() * this.players.length);
-			this.share(turnMode+": I suggest @"+this.players[this.playerIndex]+" goes next.");
+			this.share(turnMode+": I suggest @"+this.players[playerIndex]+" goes next.");
 		}
+		console.log("Players " + this.players);
+		console.log("Chose player " + playerIndex);
+		this.currentPlayer = this.players[playerIndex];
 	},
-	_currentTurn: function(){
-		this.share(this.players[this.lastTurn]);
+	_currentTurn: function(){		
+		this.share("@" + this.currentPlayer + " is working on the story.");
 	},
 	_changeTurnMode: function(){
 		this.turnMode++;
@@ -134,7 +137,7 @@ Slashbot.prototype = {
 	},
 	_latest: function(who){
 		if (this.currentStoryFragments.length == 0){
-			this.say(who, "The current story has not begun");
+			this.say(who, "The current story has not begun.");
 			return;
 		}
 		var storypart = this.currentStoryFragments[this.currentStoryFragments.length-1];
