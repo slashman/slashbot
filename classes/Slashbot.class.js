@@ -201,10 +201,11 @@ Slashbot.prototype = {
 	_help: function (who){
 		this.say(who, "[story:] Adds a new fragment to the story");
 		this.say(who, "[correct:] Corrects the last fragment of the story");
-		this.say(who, "[latest] Gets the latest fragment");
-		this.say(who, "[story so far] Gets the complete story.");
-		this.say(who, "[next turn] Suggest who should do the next turn.");
-		this.say(who, "[share the story] Shows the full store for everyone.");	
+		this.say(who, "[bot latest] Gets the latest fragment");
+		this.say(who, "[bot story so far] Gets the complete story.");
+		this.say(who, "[bot next turn] Suggest who should do the next turn.");
+		this.say(who, "[bot current turn] Shows the player whose turn it is.");	
+		this.say(who, "[bot share the story] Shows the full store for everyone.");
 	},
 	say: function(who, text){
 		this.connector.say(who, text);
