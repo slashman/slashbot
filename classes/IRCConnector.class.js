@@ -8,6 +8,7 @@ function IRCConnector(config){
 
 IRCConnector.prototype = {
 	init: function(slashbot){
+		var that = this;
 		this.client = new irc.Client(this.config.server, this.config.botName, {
 			channels: [this.config.channel], password: this.config.password
 		});
@@ -18,7 +19,11 @@ IRCConnector.prototype = {
 			slashbot.message(from, to, text);
 		});
 		this.client.addListener("names", function (channel, nicks) {
-			slashbot.registerPlayers(Object.keys(nicks));
+			console.log("Channel: " + channel);
+			if(channel == slashbot.config.channel){
+				console.log('CHANNEL FOUND. Registering players...');
+				slashbot.registerPlayers(Object.keys(nicks));				
+			}
 		});
 		this.client.addListener('error', function(message) {
 		    console.log('error: ', message);

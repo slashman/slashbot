@@ -1,5 +1,6 @@
 function Slashbot(config){
 	this.playersMap = {};
+	this.currentPlayer = "";
 	this.turnModes = ["random", "roundRobin"];
 	this.turnMode = 0;
 	this.lastTurn = 0;
@@ -58,6 +59,8 @@ Slashbot.prototype = {
 				this._fullStory(false);
 			} else if (text.indexOf("next turn") > -1){
 				this._nextTurn();
+			} else if (text.indexOf("current turn") > -1){
+				this._currentTurn();
 			} else if (text.indexOf("turn mode") > -1){
 				this._changeTurnMode();
 			} else if (text.indexOf("dice") > -1 || text.indexOf("throw") > -1){
@@ -71,7 +74,6 @@ Slashbot.prototype = {
 		console.log("players in channel: ", players);
 		console.log(players.length);
 		for (var i = 0; i < players.length; i++) {
-			// console.log(i);
 			if (!this.playersMap[players[i]] && players[i] != this.config.botName) {
 				console.log("pushing "+ i + ' ' + players[i]);
 				this.players.push(players[i]);
@@ -100,19 +102,26 @@ Slashbot.prototype = {
 	},
 	_nextTurn: function(){
 		var playerIndex = 0;
-		var turnMode = this.turnModes[this.turnMode]; 
+		var turnMode = this.turnModes[this.turnMode];
+		console.log("Choosing among " + this.players.length + " players...");
 		if(turnMode === 'roundRobin'){
 			playerIndex = this.lastTurn;
 			this.lastTurn++;
-			this.share(turnMode+": I suggest @"+this.players[playerIndex]+" goes next." + playerIndex);
+			this.share(turnMode+": I suggest @"+this.players[playerIndex]+" goes next.");
 			if (this.lastTurn >= this.players.length) {
 				this.lastTurn = 0;
 				this.share("Round complete.");
 			}
 		} else if (turnMode === 'random'){
 			playerIndex = Math.floor(Math.random() * this.players.length);
-			this.share(turnMode+": I suggest @"+this.players[this.playerIndex]+" goes next.");
+			this.share(turnMode+": I suggest @"+this.players[playerIndex]+" goes next.");
 		}
+		console.log("Players " + this.players);
+		console.log("Chose player " + playerIndex);
+		this.currentPlayer = this.players[playerIndex];
+	},
+	_currentTurn: function(){		
+		this.share("@" + this.currentPlayer + " is working on the story.");
 	},
 	_changeTurnMode: function(){
 		this.turnMode++;
@@ -128,7 +137,7 @@ Slashbot.prototype = {
 	},
 	_latest: function(who){
 		if (this.currentStoryFragments.length == 0){
-			this.say(who, "The current story has not begun");
+			this.say(who, "The current story has not begun.");
 			return;
 		}
 		var storypart = this.currentStoryFragments[this.currentStoryFragments.length-1];
@@ -192,10 +201,11 @@ Slashbot.prototype = {
 	_help: function (who){
 		this.say(who, "[story:] Adds a new fragment to the story");
 		this.say(who, "[correct:] Corrects the last fragment of the story");
-		this.say(who, "[latest] Gets the latest fragment");
-		this.say(who, "[story so far] Gets the complete story.");
-		this.say(who, "[next turn] Suggest who should do the next turn.");
-		this.say(who, "[share the story] Shows the full store for everyone.");	
+		this.say(who, "[bot latest] Gets the latest fragment");
+		this.say(who, "[bot story so far] Gets the complete story.");
+		this.say(who, "[bot next turn] Suggest who should do the next turn.");
+		this.say(who, "[bot current turn] Shows the player whose turn it is.");	
+		this.say(who, "[bot share the story] Shows the full store for everyone.");
 	},
 	say: function(who, text){
 		this.connector.say(who, text);
