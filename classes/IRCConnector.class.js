@@ -1,6 +1,7 @@
 var irc = require("irc");
 
 function IRCConnector(config){
+	this.name = 'IRCConnector';
 	this.client = null;
 	this.config = config;
 	this.channel = config.channel;

@@ -1,6 +1,7 @@
 var Slack = require('slack-client');
 
 function SlackConnector(config){
+	this.name = 'SlackConnector';
 	this.token = config.token;
 	this.autoReconnect = config.autoReconnect;
 	this.autoMark = config.autoMark;

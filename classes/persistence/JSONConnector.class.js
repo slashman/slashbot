@@ -1,7 +1,7 @@
 var fs = require("fs");
 
 function JSONConnector(){
-	
+	this.name = 'JSONConnector';
 }
 
 JSONConnector.prototype = {

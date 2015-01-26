@@ -1,4 +1,5 @@
 function Slashbot(config){
+	this.version = "0.1";
 	this.playersMap = {};
 	this.currentPlayer = "";
 	this.turnModes = ["random", "roundRobin"];
@@ -39,6 +40,8 @@ Slashbot.prototype = {
 		} else if (text.indexOf("bot") == 0){
 			if (text.indexOf("introduce yourself") > -1){
 				this._introduce(from);
+			} else if (text.indexOf("about") > -1){
+				this._about(from);
 			} else if (text.indexOf("help") > -1){
 				this._help(from);
 			} else if (text.indexOf("joke") > -1){
@@ -101,6 +104,9 @@ Slashbot.prototype = {
 	},
 	_introduce: function (){
 		this.share("I am the slashbotx, I can tell you the [story so far], or the [latest] part. If you want to add something to the story, be sure to start your message with [story:] without the brackets. Have fun!");
+	},
+	_about: function (){
+		this.share("I am Slashbot version "+this.version+". I'm running on "+this.config.environment+" using the "+this.connector.name+" interactivity connector and the "+this.persistence.name+" persistance connector.");
 	},
 	_nextTurn: function(){
 		var playerIndex = 0;
@@ -210,6 +216,7 @@ Slashbot.prototype = {
 		this.say(who, "[bot list stories] Shows the stories known by the bot.");
 		this.say(who, "[bot new story] Creates a new story and sets it as current.");
 		this.say(who, "[bot set story] Sets a story as the current one..");
+		this.say(who, "[bot about] Gets some information about the slashbot.");
 	},
 	say: function(who, text){
 		this.connector.say(who, text);

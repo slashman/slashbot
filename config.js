@@ -4,7 +4,8 @@ var JSONConnector = require("./classes/persistence/JSONConnector.class");
 var MongoConnector = require("./classes/persistence/MongoConnector.class");
 
 // Sample Slack-thru-IRC config
-module.exports = {
+/*module.exports = {
+	environment: "slashieMachine",
 	channel: "#slashbottest",
 	server: "ffoundry.irc.slack.com",
 	botName: "slashbotx",
@@ -14,11 +15,12 @@ module.exports = {
 	autoReconnect: true,
 	autoMark: true,
 	persistence: JSONConnector
-};
+};*/
 
 // Sample plain IRC config
-/*
+
 module.exports = {
+	environment: "slashieMachine",
 	channel: "#slashbot",
 	server: "verne.freenode.net",
 	botName: "slashbot",
@@ -26,4 +28,3 @@ module.exports = {
 	persistence: MongoConnector,
 	dbURL: 'mongodb://localhost:27017/slashbot'
 };
-*/

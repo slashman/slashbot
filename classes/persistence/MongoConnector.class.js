@@ -1,6 +1,7 @@
 var MongoSkin = require('mongoskin');
 
 function MongoConnector(config){
+	this.name = 'MongoConnector';
 	this.db = MongoSkin.db(config.dbURL, {nativeParser: true});
 }
 
