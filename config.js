@@ -1,4 +1,5 @@
 var IRCConnector = require("./classes/IRCConnector.class");
+var SlackConnector = require("./classes/SlackConnector.class");
 var JSONConnector = require("./classes/persistence/JSONConnector.class");
 var MongoConnector = require("./classes/persistence/MongoConnector.class");
 
@@ -8,7 +9,10 @@ module.exports = {
 	server: "ffoundry.irc.slack.com",
 	botName: "slashbotx",
 	password: "ffoundry.MUr0IDVbPois5VgPtbYY",
-	connector: IRCConnector,
+	connector: SlackConnector,
+	token: 'xoxb-3463721915-mXLDStOphmDcva9aBNBuYCcT',
+	autoReconnect: true,
+	autoMark: true,
 	persistence: JSONConnector
 };
 
