@@ -55,7 +55,7 @@ SlackConnector.prototype = {
 		    this.time = message.ts,
 		    this.text = message.text,
 		    this.response = '';
-			slashbot.message(this.user, this.text);
+			slashbot.message(this.user.name, this.text);
 		});
 
 		slack.login();
