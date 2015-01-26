@@ -16,7 +16,7 @@ IRCConnector.prototype = {
 			slashbot.channelJoined(channel, who);
 		});
 		this.client.addListener("message", function(from, to, text, message) {
-			slashbot.message(from, to, text);
+			slashbot.message(from, text);
 		});
 		this.client.addListener("names", function (channel, nicks) {
 			console.log("Channel: " + channel);

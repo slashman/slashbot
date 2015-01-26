@@ -27,7 +27,7 @@ Slashbot.prototype = {
 			this.players.push(who);		
 		}
 	},
-	message: function(from, to, text){
+	message: function(from, text){
 		if (!text)
 			return;
 		if (text.indexOf("story:") == 0){
@@ -83,19 +83,21 @@ Slashbot.prototype = {
 	_dice: function (from, text){
 		var dieNotation = /(\d+)?d(\d+)([+-]\d+)?$/.exec(text);
 	    if (!dieNotation) {
-	        this.share("What's wrong with you, "+ from+ "? This is crap: " + text);
+	        this.share("What's wrong with you, "+ from + "? This is crap: " + text);
+	    } else {
+		    var amount = (typeof dieNotation[1] == 'undefined') ? 1 : parseInt(dieNotation[1]);
+		    var faces = parseInt(dieNotation[2]);
+		    var mods = (typeof dieNotation[3] == 'undefined') ? 0 : parseInt(dieNotation[3]);
+			var diceArray = [];
+			var sum = 0;
+			for(var i = 0; i < amount; i++) {
+				var die = Math.floor(Math.random() * faces) + 1;
+				diceArray.push(die);
+				sum += die;
+			}
+			this.share("Throw = ["+diceArray+"], Avg = "+sum/amount+" Total+mods = "+(sum+mods));
+	    	
 	    }
-	    var amount = (typeof dieNotation[1] == 'undefined') ? 1 : parseInt(dieNotation[1]);
-	    var faces = parseInt(dieNotation[2]);
-	    var mods = (typeof dieNotation[3] == 'undefined') ? 0 : parseInt(dieNotation[3]);
-		var diceArray = [];
-		var sum = 0;
-		for(var i = 0; i < amount; i++) {
-			var die = Math.floor(Math.random() * faces) + 1;
-			diceArray.push(die);
-			sum += die;
-		}
-		this.share("Throw = ["+diceArray+"], Avg = "+sum/amount+" Total+mods = "+(sum+mods));
 	},
 	_introduce: function (){
 		this.share("I am the slashbotx, I can tell you the [story so far], or the [latest] part. If you want to add something to the story, be sure to start your message with [story:] without the brackets. Have fun!");
