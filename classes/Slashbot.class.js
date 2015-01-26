@@ -207,7 +207,9 @@ Slashbot.prototype = {
 		this.say(who, "[bot story so far] Gets the complete story.");
 		this.say(who, "[bot next turn] Suggest who should do the next turn.");
 		this.say(who, "[bot current turn] Shows the player whose turn it is.");	
-		this.say(who, "[bot share the story] Shows the full store for everyone.");
+		this.say(who, "[bot list stories] Shows the stories known by the bot.");
+		this.say(who, "[bot new story] Creates a new story and sets it as current.");
+		this.say(who, "[bot set story] Sets a story as the current one..");
 	},
 	say: function(who, text){
 		this.connector.say(who, text);
