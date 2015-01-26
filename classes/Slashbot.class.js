@@ -27,7 +27,7 @@ Slashbot.prototype = {
 			this.players.push(who);		
 		}
 	},
-	message: function(from, to, text){
+	message: function(from, text){
 		if (!text)
 			return;
 		if (text.indexOf("story:") == 0){
