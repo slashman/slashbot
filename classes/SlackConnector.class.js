@@ -6,7 +6,6 @@ function SlackConnector(config){
 	this.autoReconnect = config.autoReconnect;
 	this.autoMark = config.autoMark;
 	this.config = config;
-    this.text = null,
     this.slack = null;
     this.activeUsersArray = [];
     this.slashbot = null;
