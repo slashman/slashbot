@@ -63,8 +63,9 @@ SlackConnector.prototype = {
 		this.slack = slack;
 	},
 	say: function(who, text){
+		console.log(typeof who);
 		console.log("Saying: " + text + " to " + who);
-		var dm = this.slack.getChannelGroupOrDMByName(who.name);
+		var dm = this.slack.getChannelGroupOrDMByName(who);
 		dm.send(text);
 	},
 	share: function(text){
