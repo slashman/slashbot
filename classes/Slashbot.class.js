@@ -78,8 +78,10 @@ Slashbot.prototype = {
 		console.log(players.length);
 		for (var i = 0; i < players.length; i++) {
 			if (!this.playersMap[players[i]] && players[i] != this.config.botName) {
-				console.log("pushing "+ i + ' ' + players[i]);
-				this.players.push(players[i]);
+				if(this.players.indexOf(players[i]) == -1){
+					console.log("pushing player: "+ i + ' ' + players[i]);
+					this.players.push(players[i]);					
+				}
 			}
 		}
 	},
