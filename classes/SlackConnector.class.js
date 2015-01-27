@@ -5,6 +5,7 @@ function SlackConnector(config){
 	this.token = config.token;
 	this.autoReconnect = config.autoReconnect;
 	this.autoMark = config.autoMark;
+	this.config = config;
 	this.type = null;
 	this.channel = null,
     this.user = null,
@@ -12,23 +13,33 @@ function SlackConnector(config){
     this.text = null,
     this.response = '';
     this.slack = null;
+    this.activeUsersArray = [];
+    this.slashbot = null;
 
 }
 
 SlackConnector.prototype = {
 	init: function(slashbot){
-		
+		var that = this;
+		this.slashbot = slashbot;
 		console.log("Initializing with SlackConnector...");
 		var slack = new Slack(this.token, this.autoReconnect, this.autoMark);
 		slack.on('open', function() {
-			var channels = ["#test-bot"],
+			var channels = [that.config.channel],
 			    groups = [],
 			    unreads = slack.getUnreadCount(),
 			    key;
+
 			for (key in slack.channels) {
 				if (slack.channels[key].is_member) {
 					channels.push('#' + slack.channels[key].name);
 					console.log('pushing: #' + slack.channels[key].name);
+					for(var i = 0; i < slack.channels[key].members.length; i++){
+						if(slack.getUserByID(slack.channels[key].members[i]).presence == 'active'){
+							that.activeUsersArray.push(slack.getUserByID(slack.channels[key].members[i]).name);							
+						}
+					}
+					slashbot.registerPlayers(that.activeUsersArray);
 				}
 			}
 
@@ -45,11 +56,8 @@ SlackConnector.prototype = {
 
 		});
 
-		slack.on('error', function(error) {
-			console.error('Error: %s', error);
-		});
-
 		slack.on('message', function(message){
+
 			this.type = message.type,
 		    this.channel = slack.getChannelGroupOrDMByID(message.channel),
 		    this.user = slack.getUserByID(message.user),
@@ -57,6 +65,17 @@ SlackConnector.prototype = {
 		    this.text = message.text,
 		    this.response = '';
 			slashbot.message(this.user.name, this.text);
+
+			if(that.activeUsersArray.indexOf(this.user.name) == -1){
+				that.activeUsersArray.push(this.user.name);
+			}
+
+			that.slashbot.registerPlayers(that.activeUsersArray);
+
+		});
+
+		slack.on('error', function(error) {
+			console.error('Error: %s', error);
 		});
 
 		slack.login();
