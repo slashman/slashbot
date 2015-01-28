@@ -269,6 +269,8 @@ Slashbot.prototype = {
 		this.say(who, "[bot new story] Creates a new story and sets it as current.");
 		this.say(who, "[bot set story] Sets a story as the current one..");
 		this.say(who, "[bot about] Gets some information about the slashbot.");
+		this.say(who, "[yes, accept, I'll go, alright, sure] to accept an invitation to write";
+		this.say(who, "[no, decline, pass, busy, meeting, working] to decline an invitation to write";
 	},
 	say: function(who, text){
 		this.connector.say(who, text);
