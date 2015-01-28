@@ -12,7 +12,7 @@ function Slashbot(config){
 	this.persistence = new config.persistence(config);
 	this.invitationExtended = false;
 	this.currentPlayerIndex = 0;
-	this.inviteAcceptResponses = ["yes", "accept", "I'll go"];
+	this.inviteAcceptResponses = ["yes", "accept", "I'll go", "alright", "sure"];
 	this.inviteDeclineResponses = ["no", "decline", "pass", "busy", "meeting", "working"];
 }
 

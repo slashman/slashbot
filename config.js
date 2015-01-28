@@ -6,7 +6,7 @@ var MongoConnector = require("./classes/persistence/MongoConnector.class");
 // Sample Slack-thru-IRC config
 module.exports = {
 	environment: "zurdusDomain",
-	channel: "zurdbotdebug",
+	channel: "foundrystories",
 	server: "ffoundry.irc.slack.com",
 	botName: "zurdbot",
 	password: "ffoundry.MUr0IDVbPois5VgPtbYY",
