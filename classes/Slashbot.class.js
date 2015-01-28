@@ -10,6 +10,19 @@ function Slashbot(config){
 	this.config = config;
 	this.connector = new config.connector(config);
 	this.persistence = new config.persistence(config);
+	this.invitationExtended = false;
+	this.currentPlayerIndex = 0;
+	this.inviteAcceptResponses = ["yes", "accept", "I'll go"];
+	this.inviteDeclineResponses = ["no", "decline", "pass", "busy", "meeting", "working"];
+}
+
+function contains(array, text) {
+    for (var i = 0; i < array.length; i++) {
+        if (text.indexOf(array[i]) > -1) {
+            return true;
+        }
+    }
+    return false;
 }
 
 module.exports = Slashbot;
@@ -37,6 +50,10 @@ Slashbot.prototype = {
 		} else if (text.indexOf("correct:") == 0){
 			var storyText = text.substring("correct:".length);
 			this._correctStoryPart(from, storyText);
+		} else if (this.invitationExtended && from === this.currentPlayer && contains(this.inviteAcceptResponses, text)) {
+			this._manageInvitation(true);
+		} else if (this.invitationExtended && from === this.currentPlayer && contains(this.inviteDeclineResponses,text)) {
+			this._manageInvitation(false);
 		} else if (text.indexOf("bot") == 0){
 			if (text.indexOf("introduce yourself") > -1){
 				this._introduce(from);
@@ -105,39 +122,72 @@ Slashbot.prototype = {
 	    }
 	},
 	_introduce: function (){
-		this.share("I am the slashbotx, I can tell you the [story so far], or the [latest] part. If you want to add something to the story, be sure to start your message with [story:] without the brackets. Have fun!");
+		this.share("I am the zurdbot, I can tell you the [story so far], or the [latest] part. If you want to add something to the story, be sure to start your message with [story:] without the brackets. Have fun!");
 	},
 	_about: function (){
 		this.share("I am Slashbot version "+this.version+". I'm running on "+this.config.environment+" using the "+this.connector.name+" interactivity connector and the "+this.persistence.name+" persistance connector.");
 	},
 	_nextTurn: function(){
+		if(this.invitationExtended) {
+			this.share("Still no word from @" + this.currentPlayer + "...");
+			this.invitationExtended = false;
+			return;
+		}		
+
 		var playerIndex = 0;
 		var turnMode = this.turnModes[this.turnMode];
 		console.log("Choosing among " + this.players.length + " players...");
+		
 		if(turnMode === 'roundRobin'){
 			playerIndex = this.lastTurn;
 			this.lastTurn++;
-			this.share(turnMode+": I suggest @"+this.players[playerIndex]+" goes next.");
-			if (this.lastTurn >= this.players.length) {
-				this.lastTurn = 0;
-				this.share("Round complete.");
-			}
+			this.share(turnMode+": I suggest @"+this.players[playerIndex]+" goes next. What say you?");
+			this.invitationExtended = true;
 		} else if (turnMode === 'random'){
 			playerIndex = Math.floor(Math.random() * this.players.length);
-			this.share(turnMode+": I suggest @"+this.players[playerIndex]+" goes next.");
+			this.share(turnMode+": I suggest @"+this.players[playerIndex]+" goes next. What say you?");
+			this.invitationExtended = true;
 		}
 		console.log("Players " + this.players);
 		console.log("Chose player " + playerIndex);
 		this.currentPlayer = this.players[playerIndex];
 	},
+	_manageInvitation: function(accepted) {
+		this.invitationExtended = false;		
+
+		if(!accepted) {
+			this.share("Well that sucks...");			
+			console.log(this.currentPlayer + " has declined the invitation to write. Moving on");			
+			
+			if (this.turnModes[this.turnMode] === 'roundRobin' && this.lastTurn >= this.players.length) {
+				this.lastTurn = 0;
+				this.share("Round complete.");
+			}
+			else {			
+				this._nextTurn();
+			}	
+		} else {
+			this.share("Alright! That's the spirit. Take it away, @" + this.currentPlayer + "!");
+			console.log(this.currentPlayer + " has accepted the invitation to write.");	
+		}	
+
+	},
 	_currentTurn: function(){		
 		this.share("@" + this.currentPlayer + " is working on the story.");
 	},
 	_changeTurnMode: function(){
+		//Cancel any invitations
+		var invitationMessage = "";
+
+		if(this.invitationExtended) {
+			this.invitationExtended = false;
+			invitationMessage = "Invitation to @" + this.currentPlayer + " cancelled. ";
+		}
+		
 		this.turnMode++;
 		if(this.turnMode == this.turnModes.length)
 			this.turnMode = 0;
-		this.share("New turn mode: " + this.turnModes[this.turnMode] + ".");
+		this.share(invitationMessage + "New turn mode: " + this.turnModes[this.turnMode] + ".");
 	},
 	_joke: function(){
 		this.share("This is no time for jokes, my friend.");

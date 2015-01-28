@@ -5,13 +5,13 @@ var MongoConnector = require("./classes/persistence/MongoConnector.class");
 
 // Sample Slack-thru-IRC config
 module.exports = {
-	environment: "slashieMachine",
-	channel: "slashbottest",
+	environment: "zurdusDomain",
+	channel: "zurdbotdebug",
 	server: "ffoundry.irc.slack.com",
-	botName: "obibot",
+	botName: "zurdbot",
 	password: "ffoundry.MUr0IDVbPois5VgPtbYY",
 	connector: SlackConnector,
-	token: 'xoxb-3463721915-mXLDStOphmDcva9aBNBuYCcT',
+	token: 'xoxb-3534963199-Lij8gBncUIfUBPDHnxIrduDg',
 	autoReconnect: true,
 	autoMark: true,
 	persistence: JSONConnector
