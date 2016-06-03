@@ -27,7 +27,7 @@ SlackConnector.prototype = {
 
 		var WebClient = Slack.WebClient;
 
-		this.rtm = new RtmClient(this.token, {logLevel: 'debug'});
+		this.rtm = new RtmClient(this.token, {logLevel: 'info'});
 		
 		this.rtm.start();
 		
