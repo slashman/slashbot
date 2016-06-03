@@ -11,7 +11,7 @@ module.exports = {
 	botName: "obibot",
 	password: "ffoundry.MUr0IDVbPois5VgPtbYY",
 	connector: SlackConnector,
-	token: 'xoxb-3463721915-mXLDStOphmDcva9aBNBuYCcT',
+	token: 'xoxb-3463721915-FMFl8maGS9yP5AXy835FjsKa',
 	autoReconnect: true,
 	autoMark: true,
 	persistence: JSONConnector

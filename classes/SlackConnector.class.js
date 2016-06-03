@@ -84,44 +84,6 @@ SlackConnector.prototype = {
 
 			
 		});
-
-		// RtmClient.on('open', function() {
-		// 	var channelName = that.config.channel;
-		// 	var slackChannel = null;
-		// 	for (key in slack.channels) {
-		// 		console.log("Channel: "+slack.channels[key].name);
-		// 		if (/*slack.channels[key].is_member && */slack.channels[key].name === channelName) {
-		// 			slackChannel = slack.channels[key];
-		// 		}
-		// 	}
-		// 	if (!slackChannel){
-		// 		/*if (slack.groups[channelName].is_open && !slack.groups[channelName].is_archived) {
-		// 			slackChannel = slack.groups[channelName];
-		// 		} else { 
-		// 			console.log("Error: Channel or group ["+that.config.channel+"] not found or inaccessible by user");
-		// 			return;
-		// 		}*/
-		// 		console.log("Error: Channel ["+channelName+"] not found or inaccessible");
-		// 		return;
-		// 	} else if (!slackChannel.is_member) {
-		// 		console.log("Error: Bot is not member of channel ["+channelName+"]");
-		// 		return;
-		// 	}
-		// 	that.slackChannel = slackChannel;
-		// 	that._registerAllChannelMembers(slackChannel);
-		// 	console.log('Welcome to Slack. You are @%s of %s', slack.self.name, slack.team.name);
-		// 	console.log('You are in: %s', channelName);
-			
-		// });
-
-		
-
-		// slack.on('error', function(error) {
-		// 	console.error('Error: %s', error);
-		// });
-
-		// slack.login();
-		// this.slack = slack;
 	},
 	say: function(who, text){
 		console.log(typeof who);
