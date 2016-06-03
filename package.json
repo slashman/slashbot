@@ -7,10 +7,13 @@
     "start": "node slashbot.js"
   },
   "dependencies": {
-    "require": "*",
-    "node-irc": "*",
+    "@slack/client": "^3.4.0",
+    "irc": "^0.5.0",
+    "mongodb": "^2.1.16",
     "mongoskin": "*",
-    "slack-client": "*"
+    "node-irc": "*",
+    "require": "*",
+    "slack-client": "^2.0.4"
   },
   "repository": {
     "type": "git",
