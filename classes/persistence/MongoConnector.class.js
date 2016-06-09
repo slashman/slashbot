@@ -62,6 +62,17 @@ MongoConnector.prototype = {
 				console.log(err);
 		    }
 		});
+	},
+	saveMessage: function(message){
+		this.db.collection('messages').insert(message, 
+			function(err, result){
+				if (err) {
+					console.log(err);
+			    } else {
+			    	console.log('inserted!', result);			    	
+			    }
+			}
+		);
 	}
 }
 

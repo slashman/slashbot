@@ -331,5 +331,9 @@ Slashbot.prototype = {
 	},
 	_saveStory: function(){
 		this.persistence.saveStory(this.story);
+	},
+	saveMessage: function(message) {
+		this.persistence.saveMessage(message);	
 	}
+
 }

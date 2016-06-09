@@ -85,6 +85,8 @@ SlackConnector.prototype = {
 			}
 
 			that.slashbot.registerPlayers(that.activeUsersArray);
+
+			that.slashbot.saveMessage(message);
 			
 		});
 
