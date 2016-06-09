@@ -9,6 +9,7 @@ function Slashbot(config){
 	this.currentStoryFragments = [];
 	this.config = config;
 	this.connector = new config.connector(config);
+	this.conversation = new config.conversation(config);
 	this.persistence = new config.persistence(config);
 	this.invitationExtended = false;
 	this.currentPlayerIndex = 0;
@@ -31,6 +32,7 @@ Slashbot.prototype = {
 	start: function(){
 		this.persistence.init();
 		this.connector.init(this);
+		this.conversation.init();
 	},
 	channelJoined: function(channel, who){
 		if (who === this.config.botName)
@@ -50,7 +52,11 @@ Slashbot.prototype = {
 		} else if (text.indexOf("correct:") == 0){
 			var storyText = text.substring("correct:".length);
 			this._correctStoryPart(from, storyText);
-		} else if (this.invitationExtended && from === this.currentPlayer && contains(this.inviteAcceptResponses, text)) {
+		} else if (text.indexOf("skynet") == 0){
+			var conversationPiece = text.substring("skynet ".length);
+			this._converse(conversationPiece);
+		} 
+		else if (this.invitationExtended && from === this.currentPlayer && contains(this.inviteAcceptResponses, text)) {
 			this._manageInvitation(true);
 		} else if (this.invitationExtended && from === this.currentPlayer && contains(this.inviteDeclineResponses,text)) {
 			this._manageInvitation(false);
@@ -85,7 +91,7 @@ Slashbot.prototype = {
 				// this._changeTurnMode();
 			} else if (text.indexOf("dice") > -1 || text.indexOf("throw") > -1){
 				this._dice(from, text);
-			}else {
+			} else {
 				this._wtf(from);
 			}	
 		}
@@ -334,6 +340,13 @@ Slashbot.prototype = {
 	},
 	saveMessage: function(message) {
 		this.persistence.saveMessage(message);	
+	},
+	_converse: function(conversationPiece) {
+		var slashbot = this;
+		this.conversation.ask(conversationPiece, function(err, response){
+			slashbot.share(response);	
+		});
+		
 	}
 
 }
