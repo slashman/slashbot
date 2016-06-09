@@ -26,7 +26,7 @@ MongoConnector.prototype = {
 							console.log(err);
 					    } else {
 					    	console.log(result);
-					    	callback(result[0]);
+					    	callback(result.ops[0]);
 					    }
 					}
 				);

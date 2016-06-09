@@ -27,6 +27,10 @@ SlackConnector.prototype = {
 
 		var WebClient = Slack.WebClient;
 
+		if(this.config.webapiTestToken){ 
+			this.web = new RtmClient(this.config.webapiTestToken, {logLevel: 'info'});	
+		}		
+
 		this.rtm = new RtmClient(this.token, {logLevel: 'info'});
 		
 		this.rtm.start();
@@ -81,14 +85,18 @@ SlackConnector.prototype = {
 			}
 
 			that.slashbot.registerPlayers(that.activeUsersArray);
-
 			
+		});
+
+		this.rtm.on(RTM_EVENTS.PRESENCE_CHANGE, function(presence_change){
+			console.log('presence_change', presence_change);
 		});
 	},
 	say: function(who, text){
 		console.log(typeof who);
 		console.log("Saying: " + text + " to " + who);
 		var dm = this.rtm.dataStore.getDMByName(who);
+		if (!dm) throw 'You should not initiate private messages.';
 		this.rtm.sendMessage(text, dm.id);
 	},
 	share: function(text){

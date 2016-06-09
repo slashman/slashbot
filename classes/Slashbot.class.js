@@ -78,11 +78,11 @@ Slashbot.prototype = {
 			} else if (text.indexOf("share the story") > -1){
 				this._fullStory(false);
 			} else if (text.indexOf("next turn") > -1){
-				this._nextTurn();
+				// this._nextTurn();
 			} else if (text.indexOf("current turn") > -1){
-				this._currentTurn();
+				// this._currentTurn();
 			} else if (text.indexOf("turn mode") > -1){
-				this._changeTurnMode();
+				// this._changeTurnMode();
 			} else if (text.indexOf("dice") > -1 || text.indexOf("throw") > -1){
 				this._dice(from, text);
 			}else {
@@ -238,7 +238,7 @@ Slashbot.prototype = {
 		};
 		this.currentStoryFragments.push(storypart);	
 		this._saveStory();	
-		this.say(from, "Added.");
+		this.share("Added " +  from + "'s contribution.");
 	},
 	_correctStoryPart: function (from, storyText){
 		if (this.currentStoryFragments.length == 0){
@@ -285,7 +285,10 @@ Slashbot.prototype = {
 			return;
 		}
 		var slashbot = this;
+		
 		this.persistence.createStory(storyName, function(story){
+			if (!story) throw 'story was not created';
+			
 			slashbot.story = story;
 			slashbot.share('Let\'s create the story "'+slashbot.story.name+'"');
 			slashbot.currentStoryFragments = slashbot.story.fragments;
