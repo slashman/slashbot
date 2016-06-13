@@ -54,7 +54,7 @@ Slashbot.prototype = {
 			this._manageInvitation(true);
 		} else if (this.invitationExtended && from === this.currentPlayer && contains(this.inviteDeclineResponses,text)) {
 			this._manageInvitation(false);
-		} else if (text.indexOf("bot") == 0){
+		} else if (text.indexOf("bot ") == 0){
 			if (text.indexOf("introduce yourself") > -1){
 				this._introduce(from);
 			} else if (text.indexOf("about") > -1){
