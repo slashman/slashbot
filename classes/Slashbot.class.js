@@ -52,7 +52,7 @@ Slashbot.prototype = {
 		} else if (text.indexOf("correct:") == 0){
 			var storyText = text.substring("correct:".length);
 			this._correctStoryPart(from, storyText);
-		} else if (text.indexOf("skynet") == 0){
+		} else if (text.toLowerCase().indexOf("skynet") == 0){
 			var conversationPiece = text.substring("skynet ".length);
 			this._converse(conversationPiece);
 		} 
