@@ -116,7 +116,7 @@ SlackConnector.prototype = {
 	},
 	postImageAttachment: function(imageUrl) {
 		var att2 = {
-			"color": "#764FA5"
+			"color": "#764FA5",
 			"image_url": imageUrl			
 		}
 
