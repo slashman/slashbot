@@ -353,10 +353,11 @@ Slashbot.prototype = {
 		
 	},
 	_img_search: function(string) {
+		var this_ = this;
 		this.images_client.search(string)
 	    .then(function (images) {
 
-	    	this.postImageAttachment(images[0].url);
+	    	this_.connector.postImageAttachment(images[0].url);
 	        /*
 	        [{
 	            "url": "http://steveangello.com/boss.jpg",
