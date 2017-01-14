@@ -114,7 +114,7 @@ SlackConnector.prototype = {
 		}
 		this.slashbot.registerPlayers(this.activeUsersArray);
 	},
-	postImageAttachment: function(imageUrl, channel) {
+	postImageAttachment: function(imageUrl) {
 		var att2 = {
 			"color": "#764FA5",
 			"image_url": imageUrl
@@ -122,6 +122,7 @@ SlackConnector.prototype = {
 
 		msgpack = {
 			type: "message",
+			text: imageUrl,
 			channel: this.slackChannel,
 			attachments: [att2]
 		}
