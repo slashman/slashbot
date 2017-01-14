@@ -114,14 +114,15 @@ SlackConnector.prototype = {
 		}
 		this.slashbot.registerPlayers(this.activeUsersArray);
 	},
-	postImageAttachment: function(imageUrl) {
+	postImageAttachment: function(imageUrl, channel) {
 		var att2 = {
 			"color": "#764FA5",
-			"image_url": imageUrl			
+			"image_url": imageUrl
 		}
 
 		msgpack = {
 			type: "message",
+			channel: this.slackChannel,
 			attachments: [att2]
 		}
 		this.web._makeAPICall("chat.postMessage", msgpack, function(err, res){
