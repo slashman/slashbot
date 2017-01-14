@@ -19,7 +19,10 @@ module.exports = {
 	autoReconnect: true,
 	autoMark: true,
 	persistence: MongoConnector,
-	dbURL: process.env.MONGODB_URI || 'mongodb://localhost:27017/slashbot'
+	dbURL: process.env.MONGODB_URI || 'mongodb://localhost:27017/slashbot',
+	cseId: process.env.CSE_ID || '',
+	cseKey: process.env.CSE_KEY || ''
+
 };
 
 // Sample plain IRC config

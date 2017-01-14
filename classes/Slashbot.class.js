@@ -1,3 +1,5 @@
+var ImagesClient = require('google-images');
+
 function Slashbot(config){
 	this.version = "0.1";
 	this.playersMap = {};
@@ -15,6 +17,7 @@ function Slashbot(config){
 	this.currentPlayerIndex = 0;
 	this.inviteAcceptResponses = ["yes", "accept", "I'll go", "alright", "sure"];
 	this.inviteDeclineResponses = ["no", "decline", "pass", "busy", "meeting", "working"];
+	this.images_client = new ImagesClient(config.cseId, config.cseKey);
 }
 
 function contains(array, text) {
@@ -91,7 +94,10 @@ Slashbot.prototype = {
 				// this._changeTurnMode();
 			} else if (text.indexOf("dice") > -1 || text.indexOf("throw") > -1){
 				this._dice(from, text);
-			} else {
+			} else if (text.indexOf("i") > -1 || text.indexOf("img") > -1){
+				this._img_search(from, text);
+			}
+			else {
 				this._wtf(from);
 			}	
 		}
@@ -347,6 +353,27 @@ Slashbot.prototype = {
 			slashbot.share(response);	
 		});
 		
+	},
+	_img_search: function(string) {
+		client.search(string)
+	    .then(function (images) {
+
+	    	this.postImageAttachment(images[0].url);
+	        /*
+	        [{
+	            "url": "http://steveangello.com/boss.jpg",
+	            "type": "image/jpeg",
+	            "width": 1024,
+	            "height": 768,
+	            "size": 102451,
+	            "thumbnail": {
+	                "url": "http://steveangello.com/thumbnail.jpg",
+	                "width": 512,
+	                "height": 512
+	            }
+	        }]
+	         */
+	    });
 	}
 
 }

@@ -28,7 +28,7 @@ SlackConnector.prototype = {
 		var WebClient = Slack.WebClient;
 
 		if(this.config.webapiTestToken){ 
-			this.web = new RtmClient(this.config.webapiTestToken, {logLevel: 'info'});	
+			this.web = new WebClient(this.config.webapiTestToken, {logLevel: 'info'});	
 		}		
 
 		this.rtm = new RtmClient(this.token, {logLevel: 'info'});
@@ -113,6 +113,20 @@ SlackConnector.prototype = {
 			}
 		}
 		this.slashbot.registerPlayers(this.activeUsersArray);
+	},
+	postImageAttachment: function(imageUrl) {
+		var att2 = {
+			"color": "#764FA5"
+			"image_url": imageUrl			
+		}
+
+		msgpack = {
+			type: "message",
+			attachments: [att2]
+		}
+		this.web._makeAPICall("chat.postMessage", msgpack, function(err, res){
+			console.error("postMessage result:", err, res)
+		});
 	}
 }
 
