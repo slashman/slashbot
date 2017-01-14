@@ -58,8 +58,9 @@ Slashbot.prototype = {
 		} else if (text.toLowerCase().indexOf("skynet") == 0){
 			var conversationPiece = text.substring("skynet ".length);
 			this._converse(conversationPiece);
-		} 
-		else if (this.invitationExtended && from === this.currentPlayer && contains(this.inviteAcceptResponses, text)) {
+		} else if (text.toLowerCase().indexOf("i ") == 0){
+				this._img_search(text.substring("i ".length));
+		} else if (this.invitationExtended && from === this.currentPlayer && contains(this.inviteAcceptResponses, text)) {
 			this._manageInvitation(true);
 		} else if (this.invitationExtended && from === this.currentPlayer && contains(this.inviteDeclineResponses,text)) {
 			this._manageInvitation(false);
@@ -94,10 +95,7 @@ Slashbot.prototype = {
 				// this._changeTurnMode();
 			} else if (text.indexOf("dice") > -1 || text.indexOf("throw") > -1){
 				this._dice(from, text);
-			} else if (text.indexOf("i") > -1 || text.indexOf("img") > -1){
-				this._img_search(from, text);
-			}
-			else {
+			} else {
 				this._wtf(from);
 			}	
 		}
