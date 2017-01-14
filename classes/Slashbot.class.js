@@ -353,7 +353,7 @@ Slashbot.prototype = {
 		
 	},
 	_img_search: function(string) {
-		client.search(string)
+		this.images_client.search(string)
 	    .then(function (images) {
 
 	    	this.postImageAttachment(images[0].url);
