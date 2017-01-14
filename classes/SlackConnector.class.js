@@ -125,6 +125,7 @@ SlackConnector.prototype = {
 			channel: this.slackChannel,
 			attachments: [att2]
 		}
+		console.log(this.slackChannel)
 		this.web._makeAPICall("chat.postMessage", msgpack, function(err, res){
 			console.error("postMessage result:", err, res)
 		});
