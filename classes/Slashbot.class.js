@@ -355,7 +355,7 @@ Slashbot.prototype = {
 	_img_search: function(string) {
 		var this_ = this;
 		this.images_client.search(string, {
-			'safe': 'medium'
+			safe: 'high'
 		})
 	    .then(function (images) {
 
