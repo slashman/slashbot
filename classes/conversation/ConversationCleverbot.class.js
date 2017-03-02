@@ -37,6 +37,7 @@ ConversationCleverbot.prototype = {
     },
     ask: function (question, callback){
         var that = this;
+        console.log("asking ", question);
         this.bot.ask(question, callback, function (err, response) {
             if (err) throw err;
             console.log("asked ", question);
