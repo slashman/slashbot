@@ -1,9 +1,18 @@
-var cleverbot = require("cleverbot.io");
+var Cleverbot = require("cleverbot.io");
+var Language = require('@google-cloud/language');
 
-function ConversationCleverbot(config){
+function ConversationCleverbot(config) {
     // TODO: move this to config
     this.name = 'ConversationCleverbot';
-    this.bot = new cleverbot("FzKyfsrPXRNJa36w", "vBoxMNdPkQkoaiwKnchIzZ0fgFt0LMqU");
+    this.bot = new Cleverbot("FzKyfsrPXRNJa36w", "vBoxMNdPkQkoaiwKnchIzZ0fgFt0LMqU");
+    // Your Google Cloud Platform project ID
+    projectId = config.googleProjectId;
+
+    // Instantiates a client
+    this.languageClient = new Language({
+        projectId: projectId
+    });   
+    
 }
 
 ConversationCleverbot.prototype = {
@@ -20,6 +29,19 @@ ConversationCleverbot.prototype = {
         this.bot.ask(question, callback, function (err, response) {
             if (err) throw err;
             callback(response);
+
+            language.detectEntities(question, function(err, entities) {
+                for (var property in entities) {
+                    if (object.hasOwnProperty(property)) {
+                        callback("Entity: \r```\r" + property + "\r```");
+                    }
+                }
+            });
+            // Detects the sentiment of the text
+            var doc = language.document(question);
+            languageClient.detectSentiment(function(err, sentiment) {
+                callback("```\r" + sentiment + "\r```");
+            });
         });        
     }
 

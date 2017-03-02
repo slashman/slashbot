@@ -348,7 +348,7 @@ Slashbot.prototype = {
 	_converse: function(conversationPiece) {
 		var slashbot = this;
 		this.conversation.ask(conversationPiece, function(err, response){
-			slashbot.share(response);	
+			slashbot.share(response);			
 		});
 		
 	},

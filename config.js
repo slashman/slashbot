@@ -21,7 +21,8 @@ module.exports = {
 	persistence: MongoConnector,
 	dbURL: process.env.MONGODB_URI || 'mongodb://localhost:27017/slashbot',
 	cseId: process.env.CSE_ID || '',
-	cseKey: process.env.CSE_KEY || ''
+	cseKey: process.env.CSE_KEY || '',
+	googleProjectId: process.env.GOOGLE_PROJECT_ID || '',
 
 };
 

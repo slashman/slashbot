@@ -1,0 +1,87 @@
+#: zenput/settings.py:339
+msgid "English"
+msgstr "English"
+
+#: zenput/settings.py:340
+msgid "Spanish"
+msgstr "Español"
+
+#: zenput/apps/forms/views.py:663
+msgid ""
+"Submission rejected due to invalid new account field. Please correct errors "
+"and retry"
+msgstr ""
+"Submission rejected due to invalid new account field. Please correct errors "
+"and retry"
+
+#: zenput/apps/forms/views.py:667
+msgid "Unable to save form at this time."
+msgstr "Unable to save form at this time."
+
+#: zenput/apps/tasks/views.py:406 zenput/apps/tasks/views.py:436
+msgid "Overdue"
+msgstr "Overdue"
+
+#: zenput/apps/tasks/views.py:412 zenput/apps/tasks/views.py:442
+msgid "Today"
+msgstr "Today"
+
+#: zenput/apps/tasks/views.py:417 zenput/apps/tasks/views.py:447
+msgid "This Week"
+msgstr "This Week"
+
+#: zenput/apps/tasks/views.py:422 zenput/apps/tasks/views.py:452
+msgid "Total"
+msgstr "Total"
+
+#: zenput/apps/tasks/views.py:559
+msgid "My Tasks"
+msgstr "My Tasks"
+
+#: zenput/apps/tasks/views.py:565
+msgid "Tasks"
+msgstr "Tasks"
+
+#: zenput/apps/tasks/views.py:572
+msgid "Projects Due Soon"
+msgstr "Projects Due Soon"
+
+#: zenput/apps/tasks/views.py:579
+msgid "Nearby Tasks"
+msgstr "Nearby Tasks"
+
+#: zenput/apps/users/views.py:891
+msgid "Invalid username or password"
+msgstr "Invalid username or password"
+
+#: zenput/apps/users/views.py:894
+msgid "Your account has been disabled"
+msgstr "Your account has been disabled"
+
+#: zenput/apps/users/views.py:901
+msgid "An error occurred, please try again."
+msgstr "An error occurred, please try again."
+
+#: zenput/templates/admin/base.html:28
+msgid "Welcome,"
+msgstr "Welcome,"
+
+#: zenput/templates/admin/base.html:33
+msgid "Documentation"
+msgstr "Documentation"
+
+#: zenput/templates/admin/base.html:36
+msgid "Change password"
+msgstr "Change password"
+
+#: zenput/templates/admin/base.html:38
+msgid "Log out"
+msgstr "Log out"
+
+#: zenput/templates/admin/base.html:47
+msgid "Home"
+msgstr "Home"
+
+#: zenput/templates/users/password_reset_subject.txt:2
+msgid "Password reset for Zenput"
+msgstr "Password reset for Zenput"
