@@ -42,7 +42,10 @@ ConversationCleverbot.prototype = {
             if (err) throw err;
             console.log("asked ", question);
             that.languageClient.detectEntities(question, function(err, entities) {
-                if (err) throw err;
+                if (err) {
+                    callback(response);
+                    console.error(err);
+                }
                 for (var property in entities) {
                     if (object.hasOwnProperty(property)) {
                         response += "\rEntity: \r```\r" + property + "\r```";
@@ -54,7 +57,7 @@ ConversationCleverbot.prototype = {
                 that.languageClient.detectSentiment(function(err, sentiment) {
                     if (err) throw err;
                     console.log("callback with: ", response);
-                    cb(response += "\r```\r" + sentiment + "\r```");
+                    callback(response += "\r```\r" + sentiment + "\r```");
 
                 });
             });
