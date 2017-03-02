@@ -40,6 +40,7 @@ ConversationCleverbot.prototype = {
         this.bot.ask(question, callback, function (err, response) {
             if (err) throw err;
             language.detectEntities(question, function(err, entities) {
+                if (err) throw err;
                 for (var property in entities) {
                     if (object.hasOwnProperty(property)) {
                         response += "\rEntity: \r```\r" + property + "\r```";
@@ -48,6 +49,7 @@ ConversationCleverbot.prototype = {
                 // Detects the sentiment of the text
                 var doc = language.document(question);
                 languageClient.detectSentiment(function(err, sentiment) {
+                    if (err) throw err;
                     callback(response += "\r```\r" + sentiment + "\r```");
                 });
             });
