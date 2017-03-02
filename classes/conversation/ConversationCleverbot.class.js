@@ -39,6 +39,7 @@ ConversationCleverbot.prototype = {
         var that = this;
         this.bot.ask(question, callback, function (err, response) {
             if (err) throw err;
+            console.log("asked ", question);
             language.detectEntities(question, function(err, entities) {
                 if (err) throw err;
                 for (var property in entities) {
