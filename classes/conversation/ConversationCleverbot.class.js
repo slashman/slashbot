@@ -44,13 +44,16 @@ ConversationCleverbot.prototype = {
                 for (var property in entities) {
                     if (object.hasOwnProperty(property)) {
                         response += "\rEntity: \r```\r" + property + "\r```";
+                        console.log(response);
                     }
                 }
                 // Detects the sentiment of the text
                 var doc = language.document(question);
                 languageClient.detectSentiment(function(err, sentiment) {
                     if (err) throw err;
+                    console.log("callback with: ", response);
                     callback(response += "\r```\r" + sentiment + "\r```");
+
                 });
             });
             
