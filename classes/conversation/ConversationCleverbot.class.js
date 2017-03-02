@@ -41,7 +41,7 @@ ConversationCleverbot.prototype = {
         this.cleverbot.ask(question, function (err, response) {
             if (err) throw err;
             console.log("asked ", question);
-            language.detectEntities(question, function(err, entities) {
+            that.languageClient.detectEntities(question, function(err, entities) {
                 if (err) throw err;
                 for (var property in entities) {
                     if (object.hasOwnProperty(property)) {
@@ -50,8 +50,8 @@ ConversationCleverbot.prototype = {
                     }
                 }
                 // Detects the sentiment of the text
-                var doc = language.document(question);
-                languageClient.detectSentiment(function(err, sentiment) {
+                var doc = that.languageClient.document(question);
+                that.languageClient.detectSentiment(function(err, sentiment) {
                     if (err) throw err;
                     console.log("callback with: ", response);
                     cb(response += "\r```\r" + sentiment + "\r```");
