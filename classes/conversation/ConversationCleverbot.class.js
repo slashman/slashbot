@@ -28,20 +28,19 @@ ConversationCleverbot.prototype = {
         var that = this;
         this.bot.ask(question, callback, function (err, response) {
             if (err) throw err;
-            callback(response);
-
             language.detectEntities(question, function(err, entities) {
                 for (var property in entities) {
                     if (object.hasOwnProperty(property)) {
-                        callback("Entity: \r```\r" + property + "\r```");
+                        response += "\rEntity: \r```\r" + property + "\r```";
                     }
                 }
+                // Detects the sentiment of the text
+                var doc = language.document(question);
+                languageClient.detectSentiment(function(err, sentiment) {
+                    callback(response += "\r```\r" + sentiment + "\r```");
+                });
             });
-            // Detects the sentiment of the text
-            var doc = language.document(question);
-            languageClient.detectSentiment(function(err, sentiment) {
-                callback("```\r" + sentiment + "\r```");
-            });
+            
         });        
     }
 
