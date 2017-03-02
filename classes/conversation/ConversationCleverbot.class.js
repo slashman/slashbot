@@ -14,7 +14,7 @@ function ConversationCleverbot(config) {
         credentials: {
             type: config.type,
             project_id: config.project_id,
-            private_key_id: config.private_key_id
+            private_key_id: config.private_key_id,
             private_key: config.private_key,
             client_email: config.client_email,
             client_id: config.client_id,
