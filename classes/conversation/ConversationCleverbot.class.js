@@ -4,7 +4,7 @@ var Language = require('@google-cloud/language');
 function ConversationCleverbot(config) {
     // TODO: move this to config
     this.name = 'ConversationCleverbot';
-    this.bot = new Cleverbot("FzKyfsrPXRNJa36w", "vBoxMNdPkQkoaiwKnchIzZ0fgFt0LMqU");
+    this.cleverbot = new Cleverbot("FzKyfsrPXRNJa36w", "vBoxMNdPkQkoaiwKnchIzZ0fgFt0LMqU");
     // Your Google Cloud Platform project ID
     projectId = config.googleProjectId;
 
@@ -28,17 +28,17 @@ function ConversationCleverbot(config) {
 
 ConversationCleverbot.prototype = {
     init: function(){
-        this.bot.setNick("cleverfoundry");
-        this.bot.create(function (err, session) {
+        this.cleverbot.setNick("cleverfoundry");
+        this.cleverbot.create(function (err, session) {
           // session is your session name, it will either be as you set it previously, or cleverbot.io will generate one for you
 
           // Woo, you initialized cleverbot.io.  Insert further code here
         });
     },
-    ask: function (question, callback){
+    askSkynet: function (question, callback){
         var that = this;
         console.log("asking ", question);
-        this.bot.askSkynet(question, callback, function (err, response) {
+        this.cleverbot.ask(question, callback, function (err, response) {
             if (err) throw err;
             console.log("asked ", question);
             language.detectEntities(question, function(err, entities) {
