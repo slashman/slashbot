@@ -38,7 +38,7 @@ ConversationCleverbot.prototype = {
     askSkynet: function (question, callback){
         var that = this;
         console.log("asking ", question);
-        this.cleverbot.ask(question, callback, function (err, response) {
+        this.cleverbot.ask(question, function (err, response) {
             if (err) throw err;
             console.log("asked ", question);
             language.detectEntities(question, function(err, entities) {
@@ -54,7 +54,7 @@ ConversationCleverbot.prototype = {
                 languageClient.detectSentiment(function(err, sentiment) {
                     if (err) throw err;
                     console.log("callback with: ", response);
-                    callback(response += "\r```\r" + sentiment + "\r```");
+                    cb(response += "\r```\r" + sentiment + "\r```");
 
                 });
             });
