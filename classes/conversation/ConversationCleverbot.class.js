@@ -36,6 +36,11 @@ ConversationCleverbot.prototype = {
         });
     },
     askSkynet: function (question, callback){
+        // Instantiates a client
+        this.languageClient = new Language({
+            projectId: projectId,
+            credentials: creds
+        });
         var that = this;
         this.cleverbot.ask(question, function (err, response) {
             if (err) throw err;
