@@ -43,7 +43,7 @@ ConversationCleverbot.prototype = {
             console.log("asked ", question);
             that.languageClient.detectEntities(question, function(err, entities) {
                 if (err) {
-                    that.callback(response);
+                    callback(response || '');
                     console.error(err);
                 }
                 for (var property in entities) {
@@ -57,7 +57,7 @@ ConversationCleverbot.prototype = {
                 that.languageClient.detectSentiment(function(err, sentiment) {
                     if (err) throw err;
                     console.log("callback with: ", response);
-                    that.callback(response += "\r```\r" + sentiment + "\r```");
+                    callback(response += "\r```\r" + sentiment + "\r```");
 
                 });
             });
