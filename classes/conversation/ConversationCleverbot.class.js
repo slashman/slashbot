@@ -50,7 +50,10 @@ ConversationCleverbot.prototype = {
         // Detects the sentiment of the text
         var doc = that.languageClient.document(question);
         doc.detectSentiment(function(err, sentiment) {
-            if (err) throw err;
+            if (err) {
+                console.log(err);
+                return;
+            };
             callback("\r```\r" + JSON.stringify(sentiment, null, 4) + "\r```");
         });
 
