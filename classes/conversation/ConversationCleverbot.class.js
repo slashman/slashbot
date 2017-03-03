@@ -50,7 +50,7 @@ ConversationCleverbot.prototype = {
         });
 
         // Parse the syntax of the document. 
-        document.annotate(function(err, annotations) {
+        doc.annotate(function(err, annotations) {
             if (err) throw err;
             callback("\r```\r" + JSON.stringify(annotations) + "\r```\r")
         });
