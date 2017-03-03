@@ -49,16 +49,16 @@ ConversationCleverbot.prototype = {
 
         // Detects the sentiment of the text
         var doc = that.languageClient.document(question);
-        // doc.detectSentiment(function(err, sentiment) {
-        //     if (err) throw err;
-        //     callback("\r```\r" + JSON.stringify(sentiment, null, 4) + "\r```");
-        // });
+        doc.detectSentiment(function(err, sentiment) {
+            if (err) throw err;
+            callback("\r```\r" + JSON.stringify(sentiment, null, 4) + "\r```");
+        });
 
         // Parse the syntax of the document. 
-        doc.annotate(function(err, annotations) {
-            if (err) throw err;
-            callback("\r```\r" + JSON.stringify(annotations, null, 4) + "\r```\r")
-        });
+        // doc.annotate(function(err, annotations) {
+        //     if (err) throw err;
+        //     callback("\r```\r" + JSON.stringify(annotations, null, 4) + "\r```\r")
+        // });
 
         // that.languageClient.detectEntities(question, function(err, entities) {
         //     if (err) throw err;
