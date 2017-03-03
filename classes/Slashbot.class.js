@@ -347,7 +347,7 @@ Slashbot.prototype = {
 	},
 	_converse: function(conversationPiece) {
 		var slashbot = this;
-		this.conversation.askSkynet(conversationPiece, function(err, response){
+		this.conversation.askSkynet(conversationPiece, function(response){
 			console.log(response);
 			slashbot.share(response);			
 		});

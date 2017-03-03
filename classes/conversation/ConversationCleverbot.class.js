@@ -7,22 +7,23 @@ function ConversationCleverbot(config) {
     this.cleverbot = new Cleverbot("FzKyfsrPXRNJa36w", "vBoxMNdPkQkoaiwKnchIzZ0fgFt0LMqU");
     // Your Google Cloud Platform project ID
     projectId = config.googleProjectId;
-
+    creds = {
+        "type": config.type,
+        "project_id": config.project_id,
+        "private_key_id": config.private_key_id,
+        "private_key": config.private_key,
+        "client_email": config.client_email,
+        "client_id": config.client_id,
+        "auth_uri": config.auth_uri,
+        "token_uri": config.token_uri,
+        "auth_provider_x509_cert_url": config.auth_provider_x509_cert_url,
+        "client_x509_cert_url": config.client_x509_cert_url
+    }
+    console.log(creds);
     // Instantiates a client
     this.languageClient = new Language({
         projectId: projectId,
-        credentials: {
-            "type": config.type,
-            "project_id": config.project_id,
-            "private_key_id": config.private_key_id,
-            "private_key": config.private_key,
-            "client_email": config.client_email,
-            "client_id": config.client_id,
-            "auth_uri": config.auth_uri,
-            "token_uri": config.token_uri,
-            "auth_provider_x509_cert_url": config.auth_provider_x509_cert_url,
-            "client_x509_cert_url": config.client_x509_cert_url
-        }
+        credentials: creds
     });
 }
 
@@ -37,32 +38,23 @@ ConversationCleverbot.prototype = {
     },
     askSkynet: function (question, callback){
         var that = this;
-        console.log("asking ", question);
         this.cleverbot.ask(question, function (err, response) {
             if (err) throw err;
-            console.log("asked ", question);
-            that.languageClient.detectEntities(question, function(err, entities) {
-                if (err) {
-                    callback(response || '');
-                    console.error(err);
-                }
-                for (var property in entities) {
-                    if (object.hasOwnProperty(property)) {
-                        response += "\rEntity: \r```\r" + property + "\r```";
-                        console.log(response);
-                    }
-                }
-                // Detects the sentiment of the text
-                var doc = that.languageClient.document(question);
-                that.languageClient.detectSentiment(function(err, sentiment) {
-                    if (err) throw err;
-                    console.log("callback with: ", response);
-                    callback(response += "\r```\r" + sentiment + "\r```");
+            callback(response);
+        });     
 
-                });
-            });
-            
-        });        
+        // Detects the sentiment of the text
+        var doc = that.languageClient.document(question);
+        doc.detectSentiment(function(err, sentiment) {
+            if (err) throw err;
+            callback("\r```\r" + JSON.stringify(sentiment) + "\r```");
+        });
+
+        that.languageClient.detectEntities(question, function(err, entities) {
+            if (err) throw err;
+            callback("\r```\r" + JSON.stringify(entities) + "\r```\r")
+        });
+   
     }
 
 };
