@@ -49,6 +49,12 @@ ConversationCleverbot.prototype = {
             callback("\r```\r" + JSON.stringify(sentiment) + "\r```");
         });
 
+        // Parse the syntax of the document. 
+        document.annotate(function(err, annotations) {
+            if (err) throw err;
+            callback("\r```\r" + JSON.stringify(annotations) + "\r```\r")
+        });
+
         that.languageClient.detectEntities(question, function(err, entities) {
             if (err) throw err;
             callback("\r```\r" + JSON.stringify(entities) + "\r```\r")
