@@ -42,13 +42,13 @@ ConversationCleverbot.prototype = {
             credentials: creds
         });
         var that = this;
-        this.cleverbot.ask(question, function (err, response) {
-            if (err) {
-                console.log(err);
-                return;
-            };
-            callback(response);
-        });     
+        // this.cleverbot.ask(question, function (err, response) {
+        //     if (err) {
+        //         console.log(err);
+        //         return;
+        //     };
+        //     callback(response);
+        // });     
 
         // Detects the sentiment of the text
         var doc = that.languageClient.document(question);
