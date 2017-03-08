@@ -28,12 +28,12 @@ function ConversationCleverbot(config) {
 
 ConversationCleverbot.prototype = {
     init: function(){
-        this.cleverbot.setNick("cleverfoundry");
-        this.cleverbot.create(function (err, session) {
-          // session is your session name, it will either be as you set it previously, or cleverbot.io will generate one for you
+        // this.cleverbot.setNick("cleverfoundry");
+        // this.cleverbot.create(function (err, session) {
+        //   // session is your session name, it will either be as you set it previously, or cleverbot.io will generate one for you
 
-          // Woo, you initialized cleverbot.io.  Insert further code here
-        });
+        //   // Woo, you initialized cleverbot.io.  Insert further code here
+        // });
     },
     askSkynet: function (question, callback){
         // Instantiates a client
