@@ -43,7 +43,10 @@ ConversationCleverbot.prototype = {
         });
         var that = this;
         this.cleverbot.ask(question, function (err, response) {
-            if (err) throw err;
+            if (err) {
+                console.log(err);
+                return;
+            };
             callback(response);
         });     
 
