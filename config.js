@@ -14,7 +14,7 @@ module.exports = {
 	connector: SlackConnector,
 	conversation: ConversationConnector,
 	// token: 'xoxb-47967087845-iMA1zwp2jHK5geu9emPyppM6', //lulz
-	token: 'xoxb-3463721915-FMFl8maGS9yP5AXy835FjsKa', //obibot
+	token: process.env.FOUNDRYBOT_TOKEN, //obibot
 	webapiTestToken: process.env.SLACK_WEB_API_TEST_TOKEN || '',
 	autoReconnect: true,
 	autoMark: true,

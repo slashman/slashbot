@@ -203,7 +203,7 @@ Slashbot.prototype = {
 		this.share("This is no time for jokes, my friend.");
 	},
 	_creator: function(){
-		this.share("I am being created by the slashbot dev team at https://github.com/slashman/slashbot . Join if you will.");
+		this.share("I was created by Slash. Mojito defeated Slash in an epic battle described in many songs and captured me. Mojito is now my master and he keeps me at https://github.com/gaguevaras/slashbot.");
 	},
 	_latest: function(who){
 		if (this.currentStoryFragments.length == 0){
