@@ -222,9 +222,6 @@ Slashbot.prototype = {
 			}
 			return;
 		}
-		if (!who){
-			this.share("This is the story so far:");
-		}
 		
 		var frags = [];
 		for (var i = 0; i < this.currentStoryFragments.length; i++){
@@ -237,12 +234,17 @@ Slashbot.prototype = {
     		chunked_frags.push(frags.splice(0, chunk_size).join(" "));
 		}
 
+		if (!who){
+			this.share("This is the story so far: ");
+		} else {
+			this.say(who, "This is the story so far: ");
+		}
 		for (var i = 0; i < chunked_frags.length; i++){
 			if (!who){
 				this.share(chunked_frags[i]);
 			} else {
 				this.say(who, chunked_frags[i]);
-			}			
+			}
 		}		
 	},
 	_wtf: function(who){
