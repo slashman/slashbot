@@ -225,13 +225,16 @@ Slashbot.prototype = {
 		if (!who){
 			this.share("This is the story so far:");
 		}
-		for (var i = 0; i < this.currentStoryFragments.length; i++){
-			var storypart = this.currentStoryFragments[i];
-			if (!who){
-				this.share(storypart.story);
-			} else {
-				this.say(who, storypart.story);
-			}
+				
+		var frags_remaining = this.currentStoryFragments.length;
+		while (frags_remaining > 0)
+			var storypart += this.currentStoryFragments[i].story;
+		}
+
+		if (!who){
+			this.share(storypart);
+		} else {
+			this.say(who, storypart);
 		}
 	},
 	_wtf: function(who){
