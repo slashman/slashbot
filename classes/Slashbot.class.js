@@ -225,17 +225,25 @@ Slashbot.prototype = {
 		if (!who){
 			this.share("This is the story so far:");
 		}
-				
-		var frags_remaining = this.currentStoryFragments.length;
-		while (frags_remaining > 0)
-			var storypart += this.currentStoryFragments[i].story;
+		
+		var frags = [];
+		for (var i = 0; i < this.currentStoryFragments.length; i++){
+			frags.push(this.currentStoryFragments[i].story);
 		}
 
-		if (!who){
-			this.share(storypart);
-		} else {
-			this.say(who, storypart);
+		var chunk_size = 10;
+		var chunked_frags = []; //array of arrays
+		while (frags.length > 0) {
+    		chunked_frags.push(frags.splice(0, chunk_size).join(" "));
 		}
+
+		for (var i = 0; i < chunked_frags.length; i++){
+			if (!who){
+				this.share(chunked_frags[i]);
+			} else {
+				this.say(who, chunked_frags[i]);
+			}			
+		}		
 	},
 	_wtf: function(who){
 		this.share("Perhaps you need to rephrase... Or add behavior at: https://github.com/slashman/slashbot");
