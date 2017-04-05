@@ -20,7 +20,7 @@ MongoConnector.prototype = {
 					pin: PIN,
 					fragments: []
 				}
-				connector.db.collection('stories').insert(newStory, 
+				connector.db.collection('stories').insert(newStory,
 					function(err, result){
 						if (err) {
 							console.log(err);
@@ -54,7 +54,7 @@ MongoConnector.prototype = {
 			    	callback(result);
 			    }
 		    }
-	    ); 
+	    );
 	},
 	saveStory: function(story){
 		this.db.collection('stories').update({_id: story._id}, {$set:{fragments:story.fragments}}, function(err, result) {
@@ -64,15 +64,34 @@ MongoConnector.prototype = {
 		});
 	},
 	saveMessage: function(message){
-		this.db.collection('messages').insert(message, 
+		this.db.collection('messages').insert(message,
 			function(err, result){
 				if (err) {
 					console.log(err);
 			    } else {
-			    	console.log('inserted!', result);			    	
+			    	console.log('inserted!', result);
 			    }
 			}
 		);
+	},
+	setPJ: function(pj){
+		if (this.db.collection('pjs').find('{player:' + pj.player + '}').count() > 0){
+			return false;
+		}	else {
+			this.db.collection('pjs').insert(pj,
+				function(err, result){
+					if (err) {
+						console.log(err);
+				    } else {
+				    	console.log('inserted!', result);
+				    }
+				}
+			);
+			return true;
+		}
+	},
+	getPJ: function(who){
+		return this.db.collection('pjs').find('{player:' + pj.player + '}');
 	}
 }
 
