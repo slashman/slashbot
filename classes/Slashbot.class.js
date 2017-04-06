@@ -43,7 +43,7 @@ Slashbot.prototype = {
 		this.say(who, who + ", welcome to the channel. I am teh slashbot, I can tell you the [story so far], or the [latest] part. To add something to the story start your message with [story:] without the brackets. Have fun!");
 		if (!this.playersMap[who]){
 			console.log("pushing ", who);
-			this.players.push(who);
+			this.players.push(who);		
 		}
 	},
 	message: function(from, text){
@@ -97,16 +97,7 @@ Slashbot.prototype = {
 				this._dice(from, text);
 			} else {
 				this._wtf(from);
-			}
-		} else if (text.indexOf("rolbot") == 0){
-			if (text.indexOf("set PJ:") > -1){
-				var pjDescription = text.substring("set PJ:".length);
-				this._setPJ(from, pjDescription);
-			}
-			if (text.indexOf("get PJ:") > -1){
-				var pjDescription = text.substring("get PJ:".length);
-				this._getPJ(from);
-			}
+			}	
 		}
 	},
 	registerPlayers: function(players){
@@ -116,7 +107,7 @@ Slashbot.prototype = {
 			if (!this.playersMap[players[i]] && players[i] != this.config.botName) {
 				if(this.players.indexOf(players[i]) == -1){
 					console.log("pushing player: "+ i + ' ' + players[i]);
-					this.players.push(players[i]);
+					this.players.push(players[i]);					
 				}
 			}
 		}
@@ -137,7 +128,7 @@ Slashbot.prototype = {
 				sum += die;
 			}
 			this.share("Throw = ["+diceArray+"], Avg = "+sum/amount+" Total+mods = "+(sum+mods));
-
+	    	
 	    }
 	},
 	_introduce: function (){
@@ -151,12 +142,12 @@ Slashbot.prototype = {
 			this.share("Still no word from @" + this.currentPlayer + "...");
 			this.invitationExtended = false;
 			return;
-		}
+		}		
 
 		var playerIndex = 0;
 		var turnMode = this.turnModes[this.turnMode];
 		console.log("Choosing among " + this.players.length + " players...");
-
+		
 		if(turnMode === 'roundRobin'){
 			playerIndex = this.lastTurn;
 			this.lastTurn++;
@@ -172,26 +163,26 @@ Slashbot.prototype = {
 		this.currentPlayer = this.players[playerIndex];
 	},
 	_manageInvitation: function(accepted) {
-		this.invitationExtended = false;
+		this.invitationExtended = false;		
 
 		if(!accepted) {
-			this.share("Well that sucks...");
-			console.log(this.currentPlayer + " has declined the invitation to write. Moving on");
-
+			this.share("Well that sucks...");			
+			console.log(this.currentPlayer + " has declined the invitation to write. Moving on");			
+			
 			if (this.turnModes[this.turnMode] === 'roundRobin' && this.lastTurn >= this.players.length) {
 				this.lastTurn = 0;
 				this.share("Round complete.");
 			}
-			else {
+			else {			
 				this._nextTurn();
-			}
+			}	
 		} else {
 			this.share("Alright! That's the spirit. Take it away, @" + this.currentPlayer + "!");
-			console.log(this.currentPlayer + " has accepted the invitation to write.");
-		}
+			console.log(this.currentPlayer + " has accepted the invitation to write.");	
+		}	
 
 	},
-	_currentTurn: function(){
+	_currentTurn: function(){		
 		this.share("@" + this.currentPlayer + " is working on the story.");
 	},
 	_changeTurnMode: function(){
@@ -202,7 +193,7 @@ Slashbot.prototype = {
 			this.invitationExtended = false;
 			invitationMessage = "Invitation to @" + this.currentPlayer + " cancelled. ";
 		}
-
+		
 		this.turnMode++;
 		if(this.turnMode == this.turnModes.length)
 			this.turnMode = 0;
@@ -231,7 +222,7 @@ Slashbot.prototype = {
 			}
 			return;
 		}
-
+		
 		var frags = [];
 		for (var i = 0; i < this.currentStoryFragments.length; i++){
 			frags.push(this.currentStoryFragments[i].story);
@@ -254,7 +245,7 @@ Slashbot.prototype = {
 			} else {
 				this.say(who, chunked_frags[i]);
 			}
-		}
+		}		
 	},
 	_wtf: function(who){
 		this.share("Perhaps you need to rephrase... Or add behavior at: https://github.com/slashman/slashbot");
@@ -268,8 +259,8 @@ Slashbot.prototype = {
 			author: from,
 			story: storyText
 		};
-		this.currentStoryFragments.push(storypart);
-		this._saveStory();
+		this.currentStoryFragments.push(storypart);	
+		this._saveStory();	
 		this.share("Added " +  from + "'s contribution.");
 	},
 	_correctStoryPart: function (from, storyText){
@@ -289,14 +280,14 @@ Slashbot.prototype = {
 		} else {
 			this.say(from, "Sorry, only "+storypart.author+" can correct his fragment.");
 		}
-	},
+	}, 
 	_help: function (who){
 		this.say(who, "[story:] Adds a new fragment to the story");
 		this.say(who, "[correct:] Corrects the last fragment of the story");
 		this.say(who, "[bot latest] Gets the latest fragment");
 		this.say(who, "[bot story so far] Gets the complete story.");
 		this.say(who, "[bot next turn] Suggest who should do the next turn.");
-		this.say(who, "[bot current turn] Shows the player whose turn it is.");
+		this.say(who, "[bot current turn] Shows the player whose turn it is.");	
 		this.say(who, "[bot list stories] Shows the stories known by the bot.");
 		this.say(who, "[bot new story] Creates a new story and sets it as current.");
 		this.say(who, "[bot set story] Sets a story as the current one..");
@@ -317,10 +308,10 @@ Slashbot.prototype = {
 			return;
 		}
 		var slashbot = this;
-
+		
 		this.persistence.createStory(storyName, function(story){
 			if (!story) throw 'story was not created';
-
+			
 			slashbot.story = story;
 			slashbot.share('Let\'s create the story "'+slashbot.story.name+'"');
 			slashbot.currentStoryFragments = slashbot.story.fragments;
@@ -333,7 +324,7 @@ Slashbot.prototype = {
 			return;
 		}
 		var slashbot = this;
-		this.persistence.getStory(storyPIN,
+		this.persistence.getStory(storyPIN, 
 			function (story){
 				slashbot.story = story;
 				if (!slashbot.story){
@@ -347,7 +338,7 @@ Slashbot.prototype = {
 	},
 	_listStories: function (text){
 		var slashbot = this;
-		this.persistence.getStoriesList(
+		this.persistence.getStoriesList( 
 			function(stories){
 				if (!stories || stories.length == 0){
 					slashbot.share('I know no stories.');
@@ -365,15 +356,15 @@ Slashbot.prototype = {
 		this.persistence.saveStory(this.story);
 	},
 	saveMessage: function(message) {
-		this.persistence.saveMessage(message);
+		this.persistence.saveMessage(message);	
 	},
 	_converse: function(conversationPiece) {
 		var slashbot = this;
 		this.conversation.askSkynet(conversationPiece, function(response){
 			console.log(response);
-			slashbot.share(response);
+			slashbot.share(response);			
 		});
-
+		
 	},
 	_img_search: function(string) {
 		var this_ = this;
@@ -398,42 +389,6 @@ Slashbot.prototype = {
 	        }]
 	         */
 	    });
-	},
-	_setPJ: function (who, text){
-		var pjName = "...";
-		var role = text;
-		if(text == 'Paladin'){
-			pjName = 'Igor';
-	  } else if(text == 'Wizard'){
-			pjName = 'Aldar';
-	  } else if(text == 'Rogue'){
-			pjName = 'Diara';
-	  } else if(text == 'Cleric'){
-			pjName = 'Drusson';
-	  } else if(text == 'Druid'){
-			pjName = 'Arfhol';
-	  } else if(text == 'Warlock'){
-			pjName = 'Shinkei';
-	  } else if(text == 'Warrior'){
-			pjName = 'Walven';
-	  } else if(text == 'Ranger'){
-			pjName = 'Hohner';
-	  } else {
-			role = " village beggar";
-		}
-		this.share(who + " you will be known from now on as " + pjName + " the " + role);
-		var persistenPJ = {
-				player: who,
-				classType: role,
-				name: pjName
-		};
-		this.persistence.setPJ(persistenPJ);
-	},
-
-	_getPJ: function (who){
-		var pj = this.persistence.getPJ(who);
-		this.share(who + " you are " + pj.name + " the " + pj.classType);
 	}
-
 
 }
