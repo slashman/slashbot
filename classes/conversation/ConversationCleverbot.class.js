@@ -1,11 +1,8 @@
-var Cleverbot = require("cleverbot.io");
 var Language = require('@google-cloud/language');
 
 function ConversationCleverbot(config) {
     // TODO: move this to config
     this.name = 'ConversationCleverbot';
-    this.cleverbot = new Cleverbot("FzKyfsrPXRNJa36w", "vBoxMNdPkQkoaiwKnchIzZ0fgFt0LMqU");
-    // Your Google Cloud Platform project ID
     projectId = config.googleProjectId;
     creds = {
         "type": config.type,
@@ -27,13 +24,7 @@ function ConversationCleverbot(config) {
 }
 
 ConversationCleverbot.prototype = {
-    init: function(){
-        // this.cleverbot.setNick("cleverfoundry");
-        // this.cleverbot.create(function (err, session) {
-        //   // session is your session name, it will either be as you set it previously, or cleverbot.io will generate one for you
-
-        //   // Woo, you initialized cleverbot.io.  Insert further code here
-        // });
+    init: function(){        
     },
     askSkynet: function (question, callback){
         // Instantiates a client
@@ -42,14 +33,6 @@ ConversationCleverbot.prototype = {
             credentials: creds
         });
         var that = this;
-        // this.cleverbot.ask(question, function (err, response) {
-        //     if (err) {
-        //         console.log(err);
-        //         return;
-        //     };
-        //     callback(response);
-        // });     
-
         // Detects the sentiment of the text
         var doc = that.languageClient.document(question);
         doc.detectSentiment(function(err, sentiment) {
@@ -58,18 +41,7 @@ ConversationCleverbot.prototype = {
                 return;
             };
             callback("\r```\r" + JSON.stringify(sentiment, null, 4) + "\r```");
-        });
-
-        // Parse the syntax of the document. 
-        // doc.annotate(function(err, annotations) {
-        //     if (err) throw err;
-        //     callback("\r```\r" + JSON.stringify(annotations, null, 4) + "\r```\r")
-        // });
-
-        // that.languageClient.detectEntities(question, function(err, entities) {
-        //     if (err) throw err;
-        //     callback("\r```\r" + JSON.stringify(entities, null, 4) + "\r```\r")
-        // });
+        });        
    
     }
 
