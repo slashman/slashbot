@@ -382,19 +382,19 @@ Slashbot.prototype = {
 	_tweet: function(who, string) {
 		var this_ = this;
 		// I wonder which one of these guys will break through this first?
-		if (who.id === 'U03DJ7SJZ') {
-			this.persistence.getTwitterCredentials(who.id, 
-				function (creds){
-					this_.twitter.tweet(creds, who, string, function(tweeted_tweet){
-						this_.share(who.name + ' tweeted: ' + tweeted_tweet.text );
-						console.log('Tweeted: ', tweeted_tweet);
-					});
-					return;					
+		
+		this.persistence.getTwitterCredentials(who.id, 
+			function (creds){
+				if (!creds){
+					this_.share(who.name + ', you must master the forgotten art of OAuth before proceeding. Contact a GusCorp representative for assistance.');
+					return;
 				}
-			);
-			return;
-		}
-
-		this_.share(who.name + ', you must master the forgotten art of OAuth before proceeding. Contact a GusCorp representative for assistance.');
+				this_.twitter.tweet(creds, who, string, function(tweeted_tweet){
+					this_.share(who.name + ' tweeted: ' + tweeted_tweet.text );
+					console.log('Tweeted: ', tweeted_tweet);
+				});
+				return;					
+			}
+		);
 	}
 }
