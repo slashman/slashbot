@@ -18,6 +18,7 @@ function Slashbot(config){
 	this.inviteAcceptResponses = ["yes", "accept", "I'll go", "alright", "sure"];
 	this.inviteDeclineResponses = ["no", "decline", "pass", "busy", "meeting", "working"];
 	this.images_client = new ImagesClient(config.cseId, config.cseKey);
+	this.twitter = new config.twitter(config);
 }
 
 function contains(array, text) {
@@ -51,34 +52,37 @@ Slashbot.prototype = {
 			return;
 		if (text.indexOf("story:") == 0){
 			var storyText = text.substring("story:".length);
-			this._addStoryPart(from, storyText);
+			this._addStoryPart(from.name, storyText);
 		} else if (text.indexOf("correct:") == 0){
 			var storyText = text.substring("correct:".length);
-			this._correctStoryPart(from, storyText);
+			this._correctStoryPart(from.name, storyText);
 		} else if (text.toLowerCase().indexOf("skynet") == 0){
 			var conversationPiece = text.substring("skynet ".length);
 			this._converse(conversationPiece);
+		} else if (text.toLowerCase().indexOf("tweet") == 0){
+			var conversationPiece = text.substring("tweet ".length);
+			this._tweet(from, conversationPiece);
 		} else if (text.toLowerCase().indexOf("i ") == 0){
 				this._img_search(text.substring("i ".length));
-		} else if (this.invitationExtended && from === this.currentPlayer && contains(this.inviteAcceptResponses, text)) {
+		} else if (this.invitationExtended && from.name === this.currentPlayer && contains(this.inviteAcceptResponses, text)) {
 			this._manageInvitation(true);
-		} else if (this.invitationExtended && from === this.currentPlayer && contains(this.inviteDeclineResponses,text)) {
+		} else if (this.invitationExtended && from.name === this.currentPlayer && contains(this.inviteDeclineResponses,text)) {
 			this._manageInvitation(false);
 		} else if (text.indexOf("bot") == 0){
 			if (text.indexOf("introduce yourself") > -1){
-				this._introduce(from);
+				this._introduce(from.name);
 			} else if (text.indexOf("about") > -1){
-				this._about(from);
+				this._about(from.name);
 			} else if (text.indexOf("help") > -1){
-				this._help(from);
+				this._help(from.name);
 			} else if (text.indexOf("joke") > -1){
 				this._joke();
 			} else	if (text.indexOf("creator") > -1){
 				this._creator();
 			} else if (text.indexOf("latest") > -1){
-				this._latest(from);
+				this._latest(from.name);
 			} else if (text.indexOf("story so far") > -1){
-				this._fullStory(from);
+				this._fullStory(from.name);
 			} else if (text.indexOf("new story") > -1){
 				this._newStory(text);
 			} else if (text.indexOf("set story") > -1){
@@ -94,9 +98,9 @@ Slashbot.prototype = {
 			} else if (text.indexOf("turn mode") > -1){
 				// this._changeTurnMode();
 			} else if (text.indexOf("dice") > -1 || text.indexOf("throw") > -1){
-				this._dice(from, text);
+				this._dice(from.name, text);
 			} else {
-				this._wtf(from);
+				this._wtf(from.name);
 			}	
 		}
 	},
@@ -248,11 +252,12 @@ Slashbot.prototype = {
 		}		
 	},
 	_wtf: function(who){
-		this.share("Perhaps you need to rephrase... Or add behavior at: https://github.com/slashman/slashbot");
+		this.share("Perhaps you need to rephrase... Or add behavior at: https://github.com/gaguevaras/slashbot");
 	},
 	_addStoryPart: function (from, storyText){
 		if (!this.story){
 			this.say(from, "There's no story yet, you can ask me to create one using \"new story\"");
+			this._listStories();
 			return;
 		}
 		var storypart = {
@@ -341,10 +346,10 @@ Slashbot.prototype = {
 		this.persistence.getStoriesList( 
 			function(stories){
 				if (!stories || stories.length == 0){
-					slashbot.share('I know no stories.');
+					slashbot.share('I know no stories. Create one with `bot new story` ');
 					return;
 				}
-				slashbot.share('I know these stories:');
+				slashbot.share('I know these stories, use `bot set story <PIN>` to choose one.');
 				for (var i = 0; i < stories.length; i++){
 					var story = stories[i];
 					slashbot.share(story.pin+" - "+story.name);
@@ -363,8 +368,7 @@ Slashbot.prototype = {
 		this.conversation.askSkynet(conversationPiece, function(response){
 			console.log(response);
 			slashbot.share(response);			
-		});
-		
+		});		
 	},
 	_img_search: function(string) {
 		var this_ = this;
@@ -372,23 +376,25 @@ Slashbot.prototype = {
 			safe: 'high'
 		})
 	    .then(function (images) {
-
-	    	this_.connector.postImageAttachment(images[0].url);
-	        /*
-	        [{
-	            "url": "http://steveangello.com/boss.jpg",
-	            "type": "image/jpeg",
-	            "width": 1024,
-	            "height": 768,
-	            "size": 102451,
-	            "thumbnail": {
-	                "url": "http://steveangello.com/thumbnail.jpg",
-	                "width": 512,
-	                "height": 512
-	            }
-	        }]
-	         */
+	    	this_.connector.postImageAttachment(images[0].url);	        
 	    });
-	}
+	},
+	_tweet: function(who, string) {
+		var this_ = this;
+		// I wonder which one of these guys will break through this first?
+		if (who.id === 'U03DJ7SJZ') {
+			this.persistence.getTwitterCredentials(who.id, 
+				function (creds){
+					this_.twitter.tweet(creds, who, string, function(tweeted_tweet){
+						this_.share(who.name + ' tweeted: ' + tweeted_tweet.text );
+						console.log('Tweeted: ', tweeted_tweet);
+					});
+					return;					
+				}
+			);
+			return;
+		}
 
+		this_.share(who.name + ', you must master the forgotten art of OAuth before proceeding. Contact a GusCorp representative for assistance.');
+	}
 }

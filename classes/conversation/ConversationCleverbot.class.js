@@ -17,10 +17,10 @@ function ConversationCleverbot(config) {
         "client_x509_cert_url": config.client_x509_cert_url
     }
     // Instantiates a client
-    this.languageClient = new Language({
-        projectId: projectId,
-        credentials: creds
-    });
+    // this.languageClient = new Language({
+    //     projectId: projectId,
+    //     credentials: creds
+    // });
 }
 
 ConversationCleverbot.prototype = {

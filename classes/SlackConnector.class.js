@@ -78,7 +78,7 @@ SlackConnector.prototype = {
 
 			if (message.channel) that.slackChannel = message.channel;
 			
-			slashbot.message(user.name, message.text);
+			slashbot.message(user, message.text);
 
 			if(that.activeUsersArray.indexOf(user.name) == -1){
 				that.activeUsersArray.push(user.name);

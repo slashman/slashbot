@@ -45,6 +45,17 @@ MongoConnector.prototype = {
 		    }
 	    );
 	},
+	getTwitterCredentials: function (user_id, callback){
+		this.db.collection('creds').find({user_id: user_id}).toArray(
+	    	function (err, result) {
+	    		if (err) {
+					console.log(err);
+			    } else {
+			    	callback(result[0]);
+			    }
+		    }
+	    );
+	},
 	getStoriesList: function(callback){
 		this.db.collection('stories').find({},{name: 1, pin: 1}).toArray(
 	    	function (err, result) {

@@ -18,7 +18,8 @@
     "mongoskin": "*",
     "node-irc": "*",
     "require": "*",
-    "slack-client": "^2.0.4"
+    "slack-client": "^2.0.4",
+    "twitter": "^1.7.0"
   },
   "repository": {
     "type": "git",
