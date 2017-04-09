@@ -53,7 +53,6 @@ AccountabilityManager.prototype = {
             }           
         }
         if (count == 0) {
-            this.share("The available stations are not relaying data. Dodgy."); 
             return null;
         }
         // this_.share("```\n" + JSON.stringify(bodyObj, null, '\t') + "\n```");

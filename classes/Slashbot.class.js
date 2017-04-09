@@ -405,7 +405,10 @@ Slashbot.prototype = {
 	    var this_ = this;
     	// console.log('https://api.waqi.info/search/?keyword='+city+'&token=30ba56606e67af7b9e9993df62e8071864ef9b4e');
 	    this.accountability.retrieveAqi(who, city, function(result) {
-	    	if (!result) { return; }
+	    	if (!result) { 
+	    		this_.share("The stations are not transmitting data.");
+	    		return; 
+	    	}
     		this_.share("min = " + result.min + " max = " + result.max + " avg = " + result.avg);
         	this_.share("minStation = " + result.minStation + "\nmaxStation = " + result.maxStation);
         	if (city === 'bogota') {
