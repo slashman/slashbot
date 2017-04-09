@@ -409,8 +409,8 @@ Slashbot.prototype = {
     		this_.share("min = " + result.min + " max = " + result.max + " avg = " + result.avg);
         	this_.share("minStation = " + result.minStation + "\nmaxStation = " + result.maxStation);
         	if (city === 'bogota') {
-        		this_._tweet(who, "Qué está haciendo @EnriquePenalosa? Contaminación Bogotana en " + result.max + " AQI! http://aqicn.org/map/bogota/#@g/4.6187/-74.1907/11z")
-        	}        	
+        		this_._tweet(who, "Qué está haciendo @EnriquePenalosa? #Polución Bogotana en " + result.max + " AQI! http://aqicn.org/map/bogota/#@g/4.6187/-74.1907/11z")
+        	}       	
 	    });
 
 	},	
