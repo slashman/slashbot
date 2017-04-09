@@ -10,6 +10,7 @@
     "@google-cloud/language": "^0.8.0",
     "@slack/client": "^3.4.0",
     "cleverbot.io": "^1.0.4",
+    "curlrequest": "^1.0.1",
     "d3": "^3.5.17",
     "google-images": "^2.0.0",
     "irc": "^0.5.0",
