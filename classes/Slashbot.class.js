@@ -19,6 +19,7 @@ function Slashbot(config){
 	this.inviteDeclineResponses = ["no", "decline", "pass", "busy", "meeting", "working"];
 	this.images_client = new ImagesClient(config.cseId, config.cseKey);
 	this.twitter = new config.twitter(config);
+	this.accountability = new config.accountability(config);
 }
 
 function contains(array, text) {
@@ -62,6 +63,9 @@ Slashbot.prototype = {
 		} else if (text.toLowerCase().indexOf("tweet") == 0){
 			var conversationPiece = text.substring("tweet ".length);
 			this._tweet(from, conversationPiece);
+		} else if (text.toLowerCase().indexOf("aqi") == 0){
+			var conversationPiece = text.substring("aqi ".length);
+			this._aqi(from, conversationPiece);
 		} else if (text.toLowerCase().indexOf("i ") == 0){
 				this._img_search(text.substring("i ".length));
 		} else if (this.invitationExtended && from.name === this.currentPlayer && contains(this.inviteAcceptResponses, text)) {
@@ -396,5 +400,18 @@ Slashbot.prototype = {
 				return;					
 			}
 		);
-	}
+	},
+	_aqi: function(who, city) {
+	    var this_ = this;
+    	// console.log('https://api.waqi.info/search/?keyword='+city+'&token=30ba56606e67af7b9e9993df62e8071864ef9b4e');
+	    this.accountability.retrieveAqi(who, city, function(result) {
+	    	if (!result) { return; }
+    		this_.share("min = " + result.min + " max = " + result.max + " avg = " + result.avg);
+        	this_.share("minStation = " + result.minStation + "\nmaxStation = " + result.maxStation);
+        	if (city === 'bogota') {
+        		this_._tweet(who, "Qué está haciendo @EnriquePenalosa? La contaminación en Bogotá es preocupante! " + result.maxStation + " en " + result.max + " AQI! http://aqicn.org/map/bogota/#@g/4.6187/-74.1907/11z")
+        	}        	
+	    });
+
+	},	
 }
