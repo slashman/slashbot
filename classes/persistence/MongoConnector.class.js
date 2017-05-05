@@ -80,7 +80,21 @@ MongoConnector.prototype = {
 				if (err) {
 					console.log(err);
 			    } else {
-			    	console.log('inserted!', result);			    	
+			    	console.log('[PERSISTENCE] Inserted message: ', message.text);
+			    }
+			}
+		);
+	},
+	saveOrUpdateUser: function(user){
+		this.db.collection('users').update(
+			{id: user.id},
+			user,
+			{upsert:true}, 
+			function(err, result){
+				if (err) {
+					console.log(err);
+			    } else {
+			    	console.log('[PERSISTENCE] Inserted or updated user with name: ', user.name);
 			    }
 			}
 		);

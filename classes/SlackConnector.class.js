@@ -90,6 +90,7 @@ SlackConnector.prototype = {
 			message.user = user;
 
 			that.slashbot.saveMessage(message);
+			that.slashbot.saveOrUpdateUser(user);
 			
 		});
 

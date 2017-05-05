@@ -367,6 +367,9 @@ Slashbot.prototype = {
 	saveMessage: function(message) {
 		this.persistence.saveMessage(message);	
 	},
+	saveOrUpdateUser: function(user) {
+		this.persistence.saveOrUpdateUser(user);	
+	},
 	_converse: function(conversationPiece) {
 		var slashbot = this;
 		this.conversation.askSkynet(conversationPiece, function(response){
