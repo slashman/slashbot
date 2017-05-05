@@ -86,6 +86,9 @@ SlackConnector.prototype = {
 
 			that.slashbot.registerPlayers(that.activeUsersArray);
 
+			// Replace the user id for the entire user object:
+			message.user = user;
+
 			that.slashbot.saveMessage(message);
 			
 		});
