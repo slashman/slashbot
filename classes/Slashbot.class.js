@@ -417,7 +417,7 @@ Slashbot.prototype = {
         	if (city === 'bogota') {
         		this_._tweet(who, "Qué está haciendo @EnriquePenalosa? #Polución Bogotana en " + result.max + " AQI! http://aqicn.org/map/bogota/#@g/4.6187/-74.1907/11z")
         	}
-        	if (city === 'medellin') {
+        	if (city === 'medellín') {
         		this_._tweet(who, "Qué pasa en #Medellín y el #ValleDeAburrá @FicoGutierrez? la #Polución esta en " + result.max + " AQI! http://aqicn.org/map/colombia/medellin/#@g/6.208/-75.5957/12z")
         	}
 	    });
