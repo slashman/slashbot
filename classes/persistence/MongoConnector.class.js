@@ -67,6 +67,28 @@ MongoConnector.prototype = {
 		    }
 	    ); 
 	},
+	getMessageList: function(callback){
+		var now = new Date();
+		var start_of_day = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+		var start_of_day_timestamp = start_of_day / 1000;
+
+		var end_of_day = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+		var end_of_day_timestamp = end_of_day / 1000;
+		this.db.collection('messages').find({
+			ts: {
+		        $gte: '' + start_of_day_timestamp,
+		        $lte: '' + end_of_day_timestamp
+		    }
+		}).toArray(
+	    	function (err, result) {
+	    		if (err) {
+					console.log(err);
+			    } else {
+			    	callback(result);
+			    }
+		    }
+	    ); 
+	},
 	saveStory: function(story){
 		this.db.collection('stories').update({_id: story._id}, {$set:{fragments:story.fragments}}, function(err, result) {
 			if (err) {
@@ -98,6 +120,18 @@ MongoConnector.prototype = {
 			    }
 			}
 		);
+	},
+	get_user_by_id: function(id, options) {
+		this.db.collection('users').find({
+			id: id
+		},
+		function(err, result){
+			if (err) {
+				options.err(err);
+		    } else {
+		    	options.success(result)
+		    }
+		});	
 	}
 }
 

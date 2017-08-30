@@ -1,4 +1,5 @@
 var ImagesClient = require('google-images');
+var util = require('util');
 
 function Slashbot(config){
 	this.version = "0.1";
@@ -77,6 +78,8 @@ Slashbot.prototype = {
 				this._introduce(from.name);
 			} else if (text.indexOf("about") > -1){
 				this._about(from.name);
+			} else if (text.toLowerCase().indexOf("first") > -1){
+				this._first_message(from);
 			} else if (text.indexOf("help") > -1){
 				this._help(from.name);
 			} else if (text.indexOf("joke") > -1){
@@ -421,6 +424,27 @@ Slashbot.prototype = {
         		this_._tweet(who, "Qué pasa en #Medellín y el #ValleDeAburrá @FicoGutierrez? la #Polución esta en " + result.max + " AQI! http://aqicn.org/map/colombia/medellin/#@g/6.208/-75.5957/12z")
         	}
 	    });
+
+	},
+
+	_first_message: function(who, city) {
+	    var this_ = this;
+    	// console.log('https://api.waqi.info/search/?keyword='+city+'&token=30ba56606e67af7b9e9993df62e8071864ef9b4e');
+	    this.persistence.getMessageList( 
+			function(messages){
+				result = ''
+				if (!messages || messages.length == 0){
+					this_.share('No words have been spoken today.');
+					return;
+				}
+				this_.share('This is today\'s top 5:');
+				for (var i = 0; i < messages.length; i++){
+					var message = messages[i];
+					result = util.format('%s\n%s by %s', result, message.text, message.user.name);
+				}
+				this_.share(result);				
+			}
+		);
 
 	},	
 }

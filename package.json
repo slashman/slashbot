@@ -1,7 +1,7 @@
 {
   "name": "slashbot",
   "version": "0.1.0",
-  "description": "A fun bot for role playing and stuff.",
+  "description": "A fun bot for slacking off.",
   "main": "slashbot.js",
   "scripts": {
     "start": "node slashbot.js"
@@ -20,11 +20,12 @@
     "node-irc": "*",
     "require": "*",
     "slack-client": "^2.0.4",
-    "twitter": "^1.7.0"
+    "twitter": "^1.7.0",
+    "util": "^0.10.3"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/slashman/slashbot"
+    "url": "https://github.com/gaguevaras/slashbot"
   },
   "author": "Santiago Zapata",
   "contributors": [
