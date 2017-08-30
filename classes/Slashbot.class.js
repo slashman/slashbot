@@ -440,7 +440,7 @@ Slashbot.prototype = {
 				this_.share('This is today\'s top 5:');
 				for (var i = 0; i < messages.length; i++){
 					var message = messages[i];
-					result = util.format('%s\n%s by %s', result, message.text, message.user.name);
+					result = util.format('%s\n%s by @%s', result, message.text, message.user.name);
 				}
 				this_.share(result);				
 			}
