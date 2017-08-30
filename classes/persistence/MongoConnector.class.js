@@ -79,7 +79,7 @@ MongoConnector.prototype = {
 		        $gte: '' + start_of_day_timestamp,
 		        $lte: '' + end_of_day_timestamp
 		    }
-		}).toArray(
+		}).sort({ts: 1}).limit(5).toArray(
 	    	function (err, result) {
 	    		if (err) {
 					console.log(err);
