@@ -124,6 +124,15 @@ MongoConnector.prototype = {
     	doc.detectSentiment(function(err, sentiment) {
             if (err) {
                 console.log(err);
+                that.db.collection('messages').insert(message, 
+					function(err, result){
+						if (err) {
+							console.log(err);
+					    } else {				    	
+					    	console.log('[PERSISTENCE] Inserted message: ', message.text);
+					    }
+					}
+				);
                 return;
             };
             message.sentiment = sentiment;
