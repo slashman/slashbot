@@ -112,7 +112,7 @@ MongoConnector.prototype = {
 		    }
 		});
 	},
-	saveMessage: function(message){
+	getMessageSentiment: function(message){
 		this.languageClient = new Language({
             projectId: projectId,
             credentials: creds
@@ -124,27 +124,11 @@ MongoConnector.prototype = {
     	doc.detectSentiment(function(err, sentiment) {
             if (err) {
                 console.log(err);
-                that.db.collection('messages').insert(message, 
-					function(err, result){
-						if (err) {
-							console.log(err);
-					    } else {				    	
-					    	console.log('[PERSISTENCE] Inserted message: ', message.text);
-					    }
-					}
-				);
+                that.saveMessage(message);
                 return;
             };
             message.sentiment = sentiment;
-            that.db.collection('messages').insert(message, 
-				function(err, result){
-					if (err) {
-						console.log(err);
-				    } else {				    	
-				    	console.log('[PERSISTENCE] Inserted message: ', message.text);
-				    }
-				}
-			);
+            that.saveMessage(message);
             
         });		
 	},
@@ -173,7 +157,18 @@ MongoConnector.prototype = {
 		    	options.success(result)
 		    }
 		});	
-	}
+	},
+    saveMessage: function(message) {
+        this.db.collection('messages').insert(message,
+            function(err, result){
+        	    if (err) {
+                    console.log(err);
+                } else {
+                    console.log('[PERSISTENCE] Inserted message: ', message.text);
+                }
+        	}
+        );
+    }
 }
 
 module.exports = MongoConnector;
