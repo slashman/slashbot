@@ -126,12 +126,12 @@ MongoConnector.prototype = {
                 console.log(err);
                 return;
             };
+            message.sentiment = sentiment;
             that.db.collection('messages').insert(message, 
 				function(err, result){
 					if (err) {
 						console.log(err);
-				    } else {
-				    	message.sentiment = sentiment;
+				    } else {				    	
 				    	console.log('[PERSISTENCE] Inserted message: ', message.text);
 				    }
 				}
