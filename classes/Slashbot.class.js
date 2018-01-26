@@ -1,6 +1,8 @@
 var ImagesClient = require('google-images');
 const puppeteer = require('puppeteer');
 var util = require('util');
+var request = require('request');
+var fs = require('fs');
 
 function Slashbot(config){
 	this.version = "0.1";
@@ -23,6 +25,8 @@ function Slashbot(config){
 	this.twitter = new config.twitter(config);
 	this.accountability = new config.accountability(config);
 	this.puppeteer = puppeteer;
+	this.request = request;
+	this.fs = fs;
 }
 
 function contains(array, text) {
@@ -390,17 +394,42 @@ Slashbot.prototype = {
 			safe: 'high'
 		})
 	    .then(function (images) {
-	    	this_.connector.postImageAttachment(images[0].url);	        
+	    	this_.connector.postImageAttachment(images[0].url);
 	    });
 	},
 	_define: function(string) {
 		const puppeteer = this.puppeteer;
+		var this_ = this;
 		(async() => {
-		  const browser = await puppeteer.launch();
-		  const page = await browser.newPage();
-		  await page.goto('http://dle.rae.es/?w=' + string, {waitUntil: 'networkidle0'});
-		  await page.screenshot({path: string + '.png'});
-		  await browser.close();
+			const browser = await puppeteer.launch();
+			const page = await browser.newPage();
+			await page.goto('http://dle.rae.es/?w=' + string, {waitUntil: 'networkidle0'});
+			await page.screenshot({path: string + '.png'});
+			this_.request.post({
+			    url: 'https://slack.com/api/files.upload',
+			    formData: {
+			        token: this_.config.token,
+			        title: "Image",
+			        filename: string + ".png",
+			        filetype: "auto",
+			        channels: this_.connector.slackChannel,
+			        file: this_.fs.createReadStream(string + '.png'),
+			    },
+			}, function (err, response) {
+				if (err) {
+					console.log(err);
+					return;
+				}					
+			    console.log(JSON.parse(response.body));
+			    fs.unlink(string +'.png', function(error) {
+				    if (error) {
+				        throw error;
+				    }
+				    console.log('Deleted '+string+'.png!!');
+				});
+			});
+
+			await browser.close();
 		})();
 	},
 	_tweet: function(who, string) {
