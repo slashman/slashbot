@@ -18,6 +18,7 @@
     "mongodb": "^2.1.16",
     "mongoskin": "*",
     "node-irc": "*",
+    "puppeteer": "^1.0.0",
     "require": "*",
     "slack-client": "^2.0.4",
     "twitter": "^1.7.0",

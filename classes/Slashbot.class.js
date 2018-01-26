@@ -1,4 +1,5 @@
 var ImagesClient = require('google-images');
+const puppeteer = require('puppeteer');
 var util = require('util');
 
 function Slashbot(config){
@@ -21,6 +22,7 @@ function Slashbot(config){
 	this.images_client = new ImagesClient(config.cseId, config.cseKey);
 	this.twitter = new config.twitter(config);
 	this.accountability = new config.accountability(config);
+	this.puppeteer = puppeteer;
 }
 
 function contains(array, text) {
@@ -68,7 +70,9 @@ Slashbot.prototype = {
 			var conversationPiece = text.substring("aqi ".length);
 			this._aqi(from, conversationPiece);
 		} else if (text.toLowerCase().indexOf("i ") == 0){
-				this._img_search(text.substring("i ".length));
+			this._img_search(text.substring("i ".length));
+		} else if (text.toLowerCase().indexOf("def ") == 0){
+			this._define(text.substring("def ".length));
 		} else if (this.invitationExtended && from.name === this.currentPlayer && contains(this.inviteAcceptResponses, text)) {
 			this._manageInvitation(true);
 		} else if (this.invitationExtended && from.name === this.currentPlayer && contains(this.inviteDeclineResponses,text)) {
@@ -377,7 +381,7 @@ Slashbot.prototype = {
 		var slashbot = this;
 		this.conversation.askSkynet(conversationPiece, function(response){
 			console.log(response);
-			slashbot.share(response);			
+			slashbot.share(response);
 		});		
 	},
 	_img_search: function(string) {
@@ -388,6 +392,16 @@ Slashbot.prototype = {
 	    .then(function (images) {
 	    	this_.connector.postImageAttachment(images[0].url);	        
 	    });
+	},
+	_define: function(string) {
+		const puppeteer = this.puppeteer;
+		(async() => {
+		  const browser = await puppeteer.launch();
+		  const page = await browser.newPage();
+		  await page.goto('http://dle.rae.es/?w=' + string, {waitUntil: 'networkidle0'});
+		  await page.screenshot({path: string + '.png'});
+		  await browser.close();
+		})();
 	},
 	_tweet: function(who, string) {
 		var this_ = this;
