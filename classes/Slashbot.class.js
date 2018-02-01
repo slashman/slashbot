@@ -401,7 +401,7 @@ Slashbot.prototype = {
 		const puppeteer = this.puppeteer;
 		var this_ = this;
 		(async() => {
-			const browser = await puppeteer.launch({args: ['--no-sandbox']});
+			const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
 			const page = await browser.newPage();
 			await page.goto('http://dle.rae.es/?w=' + string, {waitUntil: 'networkidle0'});
 			await page.screenshot({path: string + '.png'});
