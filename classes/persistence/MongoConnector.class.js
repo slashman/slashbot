@@ -20,8 +20,10 @@ function MongoConnector(config){
 }
 
 MongoConnector.prototype = {
-	init: function(){},
-	createStory: function (storyName, callback){
+	
+    init: function(){},
+	
+    createStory: function (storyName, callback){
 		var PIN = Math.round(Math.random()*20000);
 		var connector = this;
 		this.getStory(PIN, function(story){
@@ -47,7 +49,8 @@ MongoConnector.prototype = {
 			}
 		})
 	},
-	getStory: function (storyPIN, callback){
+	
+    getStory: function (storyPIN, callback){
 		storyPIN = parseInt(storyPIN);
 	    this.db.collection('stories').find({pin: storyPIN}).toArray(
 	    	function (err, result) {
@@ -59,7 +62,8 @@ MongoConnector.prototype = {
 		    }
 	    );
 	},
-	getTwitterCredentials: function (user_id, callback){
+	
+    getTwitterCredentials: function (user_id, callback){
 		this.db.collection('creds').find({user_id: user_id}).toArray(
 	    	function (err, result) {
 	    		if (err) {
@@ -70,7 +74,8 @@ MongoConnector.prototype = {
 		    }
 	    );
 	},
-	getStoriesList: function(callback){
+	
+    getStoriesList: function(callback){
 		this.db.collection('stories').find({},{name: 1, pin: 1}).toArray(
 	    	function (err, result) {
 	    		if (err) {
@@ -81,7 +86,8 @@ MongoConnector.prototype = {
 		    }
 	    ); 
 	},
-	getMessageList: function(callback){
+	
+    getMessageList: function(callback){
 		var now = new Date();
 		var start_of_day = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 		var start_of_day_timestamp = start_of_day / 1000;
@@ -105,14 +111,16 @@ MongoConnector.prototype = {
 		    }
 	    ); 
 	},
-	saveStory: function(story){
+	
+    saveStory: function(story){
 		this.db.collection('stories').update({_id: story._id}, {$set:{fragments:story.fragments}}, function(err, result) {
 			if (err) {
 				console.log(err);
 		    }
 		});
 	},
-	getMessageSentiment: function(message){
+	
+    getMessageSentiment: function(message){
 		this.languageClient = new Language({
             projectId: projectId,
             credentials: creds
@@ -132,7 +140,8 @@ MongoConnector.prototype = {
             
         });		
 	},
-	saveOrUpdateUser: function(user){
+	
+    saveOrUpdateUser: function(user){
 		this.db.collection('users').update(
 			{id: user.id},
 			user,
@@ -146,7 +155,8 @@ MongoConnector.prototype = {
 			}
 		);
 	},
-	get_user_by_id: function(id, options) {
+	
+    getUserById: function(id, options) {
 		this.db.collection('users').find({
 			id: id
 		},
@@ -158,6 +168,7 @@ MongoConnector.prototype = {
 		    }
 		});	
 	},
+    
     saveMessage: function(message) {
         this.db.collection('messages').insert(message,
             function(err, result){

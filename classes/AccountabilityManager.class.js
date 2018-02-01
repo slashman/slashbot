@@ -4,8 +4,9 @@ function AccountabilityManager(config) {
 }
 
 AccountabilityManager.prototype = {
-    init: function(){
-    },
+    
+    init: function(){},
+    
     retrieveAqi: function (who, city, callback){
         var this_ = this;
         var request = require('request');
@@ -13,7 +14,7 @@ AccountabilityManager.prototype = {
             if (!error && response.statusCode == 200) {
                 bodyObj = JSON.parse(body);
                 if (Boolean(bodyObj.data.length)) {                    
-                    callback(this_._handle_aqi_response_body(bodyObj));
+                    callback(this_.handleAqiResponseBody(bodyObj));
                 } else {
                     var curl = require('curlrequest');
 
@@ -24,13 +25,14 @@ AccountabilityManager.prototype = {
                     }, function (err, stdout, meta) {
                         console.log(stdout);
                         bodyObj = JSON.parse(stdout);
-                        callback(this_._handle_aqi_response_body(bodyObj));
+                        callback(this_.handleAqiResponseBody(bodyObj));
                     });
                 }               
             }
         });
     },
-    _handle_aqi_response_body: function(body) {
+    
+    handleAqiResponseBody: function(body) {
         var count = 0;
         var sumAqi = 0;
         var max = 0;
@@ -55,9 +57,6 @@ AccountabilityManager.prototype = {
         if (count == 0) {
             return null;
         }
-        // this_.share("```\n" + JSON.stringify(bodyObj, null, '\t') + "\n```");
-        // this.share("min = " + min + " max = " + max + " avg = " + sumAqi/count);
-        // this.share("minStation = " + minStation + "\nmaxStation = " + maxStation);
         return {
             "min": min,
             "minStation": minStation,

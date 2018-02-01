@@ -230,6 +230,7 @@ Slashbot.prototype = {
 			const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
 			const page = await browser.newPage();
 			await page.goto('http://dle.rae.es/?w=' + string, {waitUntil: 'networkidle0'});
+			const results = await page.$('div#resultados');
 			await page.screenshot({path: string + '.png'});
 			this_.request.post({
 			    url: 'https://slack.com/api/files.upload',

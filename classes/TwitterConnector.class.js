@@ -7,8 +7,9 @@ function TwitterConnector(config) {
 }
 
 TwitterConnector.prototype = {
-    init: function(){        
-    },
+    
+    init: function(){},
+    
     tweet: function (creds, who, tweet, callback){
         var this_ = this;
         var client = new Twitter({

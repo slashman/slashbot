@@ -18,6 +18,7 @@ function SlackConnector(config){
 }
 
 SlackConnector.prototype = {
+	
 	init: function(slashbot){
 		var that = this;
 		this.slashbot = slashbot;
@@ -98,6 +99,7 @@ SlackConnector.prototype = {
 			console.log('presence_change', presence_change);
 		});
 	},
+	
 	say: function(who, text){
 		console.log(typeof who);
 		console.log("Saying: " + text + " to " + who);
@@ -108,11 +110,13 @@ SlackConnector.prototype = {
 		}
 		this.rtm.sendMessage(text, dm.id);
 	},
+	
 	share: function(text){
 		console.log("Sharing: " + text);
 		console.log('channel', this.slackChannel);
 		this.rtm.sendMessage(text, this.slackChannel);
 	},
+	
 	_registerAllChannelMembers: function (channel){
 		for(var i = 0; i < channel.members.length; i++){
 			if(this.slack.getUserByID(channel.members[i]).presence == 'active'){
@@ -121,6 +125,7 @@ SlackConnector.prototype = {
 		}
 		this.slashbot.registerPlayers(this.activeUsersArray);
 	},
+	
 	postImageAttachment: function(imageUrl) {
 		var att2 = {
 			"color": "#764FA5",
