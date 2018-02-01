@@ -7,7 +7,7 @@ var TwitterConnector = require("./classes/TwitterConnector.class");
 var AccountabilityManager = require("./classes/AccountabilityManager.class");
 var StoryManager = require('./classes/StoryManager.class')
 
-var localConfig = require('.local-config')
+// var localConfig = require('.local-config')
 
 // Sample Slack-thru-IRC config
 module.exports = {
