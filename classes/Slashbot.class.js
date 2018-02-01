@@ -198,7 +198,8 @@ Slashbot.prototype = {
 	},
 	
 	saveMessage: function(message) {
-		this.persistence.getMessageSentiment(message);
+		this.persistence.saveMessage(message);
+		// this.persistence.getMessageSentiment(message);
 	},
 	
 	saveOrUpdateUser: function(user) {

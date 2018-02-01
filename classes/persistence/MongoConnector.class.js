@@ -127,7 +127,6 @@ MongoConnector.prototype = {
         });
         var that = this;
         // Detects the sentiment of the text
-        console.log(message);
         var doc = that.languageClient.document(message.text);
     	doc.detectSentiment(function(err, sentiment) {
             if (err) {
