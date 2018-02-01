@@ -15,17 +15,13 @@ function ConversationCleverbot(config) {
         "token_uri": config.token_uri,
         "auth_provider_x509_cert_url": config.auth_provider_x509_cert_url,
         "client_x509_cert_url": config.client_x509_cert_url
-    }
-    // Instantiates a client
-    // this.languageClient = new Language({
-    //     projectId: projectId,
-    //     credentials: creds
-    // });
+    }    
 }
 
 ConversationCleverbot.prototype = {
-    init: function(){        
-    },
+    
+    init: function(){},
+    
     askSkynet: function (question, callback){
         // Instantiates a client
         this.languageClient = new Language({
