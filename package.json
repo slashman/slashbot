@@ -4,7 +4,8 @@
   "description": "A fun bot for slacking off.",
   "main": "slashbot.js",
   "scripts": {
-    "start": "node slashbot.js"
+    "start": "node slashbot.js",
+    "lint": "eslint **/*.js"
   },
   "dependencies": {
     "@google-cloud/language": "^0.8.0",
@@ -33,5 +34,10 @@
     "Gustavo Guevara",
     "Rick Buitrago",
     "David Gamboa"
-  ]
+  ],
+  "devDependencies": {
+    "eslint": "^4.16.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0"
+  }
 }
