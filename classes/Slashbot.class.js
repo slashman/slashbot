@@ -3,6 +3,7 @@ const puppeteer = require('puppeteer');
 var util = require('util');
 var request = require('request');
 var fs = require('fs');
+var StoryManager = require('./StoryManager.class')
 
 function Slashbot(config){
 	this.version = "0.1";
@@ -17,6 +18,7 @@ function Slashbot(config){
 	this.connector = new config.connector(config);
 	this.conversation = new config.conversation(config);
 	this.persistence = new config.persistence(config);
+	this.storyManager = new StoryManager(config);
 	this.invitationExtended = false;
 	this.currentPlayerIndex = 0;
 	this.inviteAcceptResponses = ["yes", "accept", "I'll go", "alright", "sure"];
@@ -41,11 +43,14 @@ function contains(array, text) {
 module.exports = Slashbot;
 
 Slashbot.prototype = {
+	
 	start: function(){
 		this.persistence.init();
 		this.connector.init(this);
+		this.storyManager.init(this);
 		this.conversation.init();
 	},
+	
 	channelJoined: function(channel, who){
 		if (who === this.config.botName)
 			return;
@@ -55,15 +60,16 @@ Slashbot.prototype = {
 			this.players.push(who);		
 		}
 	},
+	
 	message: function(from, text){
 		if (!text)
 			return;
 		if (text.indexOf("story:") == 0){
 			var storyText = text.substring("story:".length);
-			this._addStoryPart(from.name, storyText);
+			this.storyManager.addStoryPart(from.name, storyText);
 		} else if (text.indexOf("correct:") == 0){
 			var storyText = text.substring("correct:".length);
-			this._correctStoryPart(from.name, storyText);
+			this.storyManager.correctStoryPart(from.name, storyText);
 		} else if (text.toLowerCase().indexOf("skynet") == 0){
 			var conversationPiece = text.substring("skynet ".length);
 			this._converse(conversationPiece);
@@ -78,9 +84,9 @@ Slashbot.prototype = {
 		} else if (text.toLowerCase().indexOf("def ") == 0){
 			this._define(text.substring("def ".length));
 		} else if (this.invitationExtended && from.name === this.currentPlayer && contains(this.inviteAcceptResponses, text)) {
-			this._manageInvitation(true);
+			this.storyManager.manageInvitation(true);
 		} else if (this.invitationExtended && from.name === this.currentPlayer && contains(this.inviteDeclineResponses,text)) {
-			this._manageInvitation(false);
+			this.storyManager.manageInvitation(false);
 		} else if (text.indexOf("bot") == 0){
 			if (text.indexOf("introduce yourself") > -1){
 				this._introduce(from.name);
@@ -89,7 +95,7 @@ Slashbot.prototype = {
 			} else if (text.toLowerCase().indexOf("first") > -1){
 				this._first_message(from);
 			} else if (text.indexOf("help") > -1){
-				this._help(from.name);
+				this.storyManager.help(from.name);
 			} else if (text.indexOf("joke") > -1){
 				this._joke();
 			} else	if (text.indexOf("creator") > -1){
@@ -97,21 +103,21 @@ Slashbot.prototype = {
 			} else if (text.indexOf("latest") > -1){
 				this._latest(from.name);
 			} else if (text.indexOf("story so far") > -1){
-				this._fullStory(from.name);
+				this.storyManager.fullStory(from.name);
 			} else if (text.indexOf("new story") > -1){
-				this._newStory(text);
+				this.storyManager.newStory(text);
 			} else if (text.indexOf("set story") > -1){
-				this._setStory(text);
+				this.storyManager.setStory(text);
 			} else if (text.indexOf("list stories") > -1){
-				this._listStories();
+				this.storyManager.listStories();
 			} else if (text.indexOf("share the story") > -1){
-				this._fullStory(false);
+				this.storyManager.fullStory(false);
 			} else if (text.indexOf("next turn") > -1){
-				// this._nextTurn();
+				this.storyManager.nextTurn();
 			} else if (text.indexOf("current turn") > -1){
-				// this._currentTurn();
+				this.storyManager.currentTurn();
 			} else if (text.indexOf("turn mode") > -1){
-				// this._changeTurnMode();
+				this.storyManager.changeTurnMode();
 			} else if (text.indexOf("dice") > -1 || text.indexOf("throw") > -1){
 				this._dice(from.name, text);
 			} else {
@@ -119,6 +125,7 @@ Slashbot.prototype = {
 			}	
 		}
 	},
+	
 	registerPlayers: function(players){
 		console.log("players in channel: ", players);
 		console.log(players.length);
@@ -131,6 +138,7 @@ Slashbot.prototype = {
 			}
 		}
 	},
+	
 	_dice: function (from, text){
 		var dieNotation = /(\d+)?d(\d+)([+-]\d+)?$/.exec(text);
 	    if (!dieNotation) {
@@ -150,80 +158,24 @@ Slashbot.prototype = {
 	    	
 	    }
 	},
+	
 	_introduce: function (){
 		this.share("I am the slashbotx, I can tell you the [story so far], or the [latest] part. If you want to add something to the story, be sure to start your message with [story:] without the brackets. Have fun!");
 	},
+	
 	_about: function (){
 		this.share("I am Slashbot version "+this.version+". I'm running on "+this.config.environment+" using the "+this.connector.name+" interactivity connector and the "+this.persistence.name+" persistance connector.");
 	},
-	_nextTurn: function(){
-		if(this.invitationExtended) {
-			this.share("Still no word from @" + this.currentPlayer + "...");
-			this.invitationExtended = false;
-			return;
-		}		
-
-		var playerIndex = 0;
-		var turnMode = this.turnModes[this.turnMode];
-		console.log("Choosing among " + this.players.length + " players...");
-		
-		if(turnMode === 'roundRobin'){
-			playerIndex = this.lastTurn;
-			this.lastTurn++;
-			this.share(turnMode+": I suggest @"+this.players[playerIndex]+" goes next. What say you?");
-			this.invitationExtended = true;
-		} else if (turnMode === 'random'){
-			playerIndex = Math.floor(Math.random() * this.players.length);
-			this.share(turnMode+": I suggest @"+this.players[playerIndex]+" goes next. What say you?");
-			this.invitationExtended = true;
-		}
-		console.log("Players " + this.players);
-		console.log("Chose player " + playerIndex);
-		this.currentPlayer = this.players[playerIndex];
-	},
-	_manageInvitation: function(accepted) {
-		this.invitationExtended = false;		
-
-		if(!accepted) {
-			this.share("Well that sucks...");			
-			console.log(this.currentPlayer + " has declined the invitation to write. Moving on");			
-			
-			if (this.turnModes[this.turnMode] === 'roundRobin' && this.lastTurn >= this.players.length) {
-				this.lastTurn = 0;
-				this.share("Round complete.");
-			}
-			else {			
-				this._nextTurn();
-			}	
-		} else {
-			this.share("Alright! That's the spirit. Take it away, @" + this.currentPlayer + "!");
-			console.log(this.currentPlayer + " has accepted the invitation to write.");	
-		}	
-
-	},
-	_currentTurn: function(){		
-		this.share("@" + this.currentPlayer + " is working on the story.");
-	},
-	_changeTurnMode: function(){
-		//Cancel any invitations
-		var invitationMessage = "";
-
-		if(this.invitationExtended) {
-			this.invitationExtended = false;
-			invitationMessage = "Invitation to @" + this.currentPlayer + " cancelled. ";
-		}
-		
-		this.turnMode++;
-		if(this.turnMode == this.turnModes.length)
-			this.turnMode = 0;
-		this.share(invitationMessage + "New turn mode: " + this.turnModes[this.turnMode] + ".");
-	},
+	
+	
 	_joke: function(){
 		this.share("This is no time for jokes, my friend.");
 	},
+	
 	_creator: function(){
 		this.share("I was created by Slash. Mojito defeated Slash in an epic battle described in many songs and captured me. Mojito is now my master and he keeps me at https://github.com/gaguevaras/slashbot.");
 	},
+	
 	_latest: function(who){
 		if (this.currentStoryFragments.length == 0){
 			this.say(who, "The current story has not begun.");
@@ -232,155 +184,27 @@ Slashbot.prototype = {
 		var storypart = this.currentStoryFragments[this.currentStoryFragments.length-1];
 		this.say(who, "Latest part of the story was from "+storypart.author+", he added: \""+storypart.story+"\"");
 	},
-	_fullStory: function(who){
-		if (this.currentStoryFragments.length == 0){
-			if (!who){
-				this.share("The current story has not begun");
-			} else {
-				this.say(who, "The current story has not begun");
-			}
-			return;
-		}
-		
-		var frags = [];
-		for (var i = 0; i < this.currentStoryFragments.length; i++){
-			frags.push(this.currentStoryFragments[i].story);
-		}
-
-		var chunk_size = 10;
-		var chunked_frags = []; //array of arrays
-		while (frags.length > 0) {
-    		chunked_frags.push(frags.splice(0, chunk_size).join(" "));
-		}
-
-		if (!who){
-			this.share("This is the story so far: ");
-		} else {
-			this.say(who, "This is the story so far: ");
-		}
-		for (var i = 0; i < chunked_frags.length; i++){
-			if (!who){
-				this.share(chunked_frags[i]);
-			} else {
-				this.say(who, chunked_frags[i]);
-			}
-		}		
-	},
+	
 	_wtf: function(who){
 		this.share("Perhaps you need to rephrase... Or add behavior at: https://github.com/gaguevaras/slashbot");
 	},
-	_addStoryPart: function (from, storyText){
-		if (!this.story){
-			this.say(from, "There's no story yet, you can ask me to create one using \"new story\"");
-			this._listStories();
-			return;
-		}
-		var storypart = {
-			author: from,
-			story: storyText
-		};
-		this.currentStoryFragments.push(storypart);	
-		this._saveStory();	
-		this.share("Added " +  from + "'s contribution.");
-	},
-	_correctStoryPart: function (from, storyText){
-		if (this.currentStoryFragments.length == 0){
-			this.say(from, "The current story is empty.");
-			return;
-		}
-		var storypart = this.currentStoryFragments[this.currentStoryFragments.length-1];
-		if (storypart.author === from){
-			storypart = {
-				author: from,
-				story: storyText
-			};
-			this.currentStoryFragments[this.currentStoryFragments.length-1] = storypart;
-			this._saveStory();
-			this.say(from, "Corrected.");
-		} else {
-			this.say(from, "Sorry, only "+storypart.author+" can correct his fragment.");
-		}
-	}, 
-	_help: function (who){
-		this.say(who, "[story:] Adds a new fragment to the story");
-		this.say(who, "[correct:] Corrects the last fragment of the story");
-		this.say(who, "[bot latest] Gets the latest fragment");
-		this.say(who, "[bot story so far] Gets the complete story.");
-		this.say(who, "[bot next turn] Suggest who should do the next turn.");
-		this.say(who, "[bot current turn] Shows the player whose turn it is.");	
-		this.say(who, "[bot list stories] Shows the stories known by the bot.");
-		this.say(who, "[bot new story] Creates a new story and sets it as current.");
-		this.say(who, "[bot set story] Sets a story as the current one..");
-		this.say(who, "[bot about] Gets some information about the slashbot.");
-		this.say(who, "[yes, accept, I'll go, alright, sure] to accept an invitation to write");
-		this.say(who, "[no, decline, pass, busy, meeting, working] to decline an invitation to write");
-	},
+	
 	say: function(who, text){
 		this.connector.say(who, text);
 	},
+	
 	share: function(text){
 		this.connector.share(text);
 	},
-	_newStory: function(text){
-		var storyName = text.substr(text.indexOf("new story")+"new story".length+1);
-		if (!storyName || storyName.trim() === ''){
-			this.share('I need a name for the story');
-			return;
-		}
-		var slashbot = this;
-		
-		this.persistence.createStory(storyName, function(story){
-			if (!story) throw 'story was not created';
-			
-			slashbot.story = story;
-			slashbot.share('Let\'s create the story "'+slashbot.story.name+'"');
-			slashbot.currentStoryFragments = slashbot.story.fragments;
-		});
-	},
-	_setStory: function (text){
-		var storyPIN = text.substr(text.indexOf("set story")+"set story".length+1);
-		if (!storyPIN || storyPIN.trim() === ''){
-			this.share('I need a PIN for the story');
-			return;
-		}
-		var slashbot = this;
-		this.persistence.getStory(storyPIN, 
-			function (story){
-				slashbot.story = story;
-				if (!slashbot.story){
-					slashbot.share('I don\'t know a story with PIN ('+storyPIN+')');
-					return;
-				}
-				slashbot.share('Let\'s continue the story "'+slashbot.story.name+'"');
-				slashbot.currentStoryFragments = slashbot.story.fragments;
-			}
-		);
-	},
-	_listStories: function (text){
-		var slashbot = this;
-		this.persistence.getStoriesList( 
-			function(stories){
-				if (!stories || stories.length == 0){
-					slashbot.share('I know no stories. Create one with `bot new story` ');
-					return;
-				}
-				slashbot.share('I know these stories, use `bot set story <PIN>` to choose one.');
-				for (var i = 0; i < stories.length; i++){
-					var story = stories[i];
-					slashbot.share(story.pin+" - "+story.name);
-				}
-			}
-		);
-	},
-	_saveStory: function(){
-		this.persistence.saveStory(this.story);
-	},
+	
 	saveMessage: function(message) {
 		this.persistence.getMessageSentiment(message);
 	},
+	
 	saveOrUpdateUser: function(user) {
 		this.persistence.saveOrUpdateUser(user);	
 	},
+	
 	_converse: function(conversationPiece) {
 		var slashbot = this;
 		this.conversation.askSkynet(conversationPiece, function(response){
@@ -388,6 +212,7 @@ Slashbot.prototype = {
 			slashbot.share(response);
 		});		
 	},
+	
 	_img_search: function(string) {
 		var this_ = this;
 		this.images_client.search(string, {
@@ -397,6 +222,7 @@ Slashbot.prototype = {
 	    	this_.connector.postImageAttachment(images[0].url);
 	    });
 	},
+	
 	_define: function(string) {
 		const puppeteer = this.puppeteer;
 		var this_ = this;
@@ -432,6 +258,7 @@ Slashbot.prototype = {
 			await browser.close();
 		})();
 	},
+	
 	_tweet: function(who, string) {
 		var this_ = this;
 		// I wonder which one of these guys will break through this first?
@@ -450,6 +277,7 @@ Slashbot.prototype = {
 			}
 		);
 	},
+	
 	_aqi: function(who, city) {
 	    var this_ = this;
     	// console.log('https://api.waqi.info/search/?keyword='+city+'&token=30ba56606e67af7b9e9993df62e8071864ef9b4e');
@@ -472,8 +300,7 @@ Slashbot.prototype = {
 
 	_first_message: function(who, city) {
 	    var this_ = this;
-    	// console.log('https://api.waqi.info/search/?keyword='+city+'&token=30ba56606e67af7b9e9993df62e8071864ef9b4e');
-	    this.persistence.getMessageList( 
+    	this.persistence.getMessageList( 
 			function(messages){
 				result = ''
 				if (!messages || messages.length == 0){

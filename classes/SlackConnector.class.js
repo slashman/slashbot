@@ -102,7 +102,10 @@ SlackConnector.prototype = {
 		console.log(typeof who);
 		console.log("Saying: " + text + " to " + who);
 		var dm = this.rtm.dataStore.getDMByName(who);
-		if (!dm) throw 'You should not initiate private messages.';
+		if (!dm) {
+			this.rtm.sendMessage(text, this.slackChannel);
+			return;
+		}
 		this.rtm.sendMessage(text, dm.id);
 	},
 	share: function(text){

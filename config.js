@@ -5,6 +5,9 @@ var MongoConnector = require("./classes/persistence/MongoConnector.class");
 var ConversationConnector = require("./classes/conversation/ConversationCleverbot.class");
 var TwitterConnector = require("./classes/TwitterConnector.class");
 var AccountabilityManager = require("./classes/AccountabilityManager.class");
+var StoryManager = require('./classes/StoryManager.class')
+
+var localConfig = require('.local-config')
 
 // Sample Slack-thru-IRC config
 module.exports = {
@@ -16,6 +19,7 @@ module.exports = {
 	connector: SlackConnector,
 	conversation: ConversationConnector,
     twitter: TwitterConnector,
+    storyManager: StoryManager,
     twt_consumer_secret: process.env.TWT_CONSUMER_SECRET,
     twt_consumer_key: process.env.TWT_CONSUMER_KEY,	
 	token: process.env.FOUNDRYBOT_TOKEN, //obibot or lulzbot
