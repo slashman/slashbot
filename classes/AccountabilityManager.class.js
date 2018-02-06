@@ -4,34 +4,34 @@ function AccountabilityManager(config) {
 }
 
 AccountabilityManager.prototype = {
-    
+
     init: function(){},
-    
+
     retrieveAqi: function (who, city, callback){
         var this_ = this;
         var request = require('request');
         request('https://api.waqi.info/search/?keyword=' + city + '&token=' + this_.aqiToken, function(error, response, body) {
             if (!error && response.statusCode == 200) {
                 bodyObj = JSON.parse(body);
-                if (Boolean(bodyObj.data.length)) {                    
+                if (Boolean(bodyObj.data.length)) {
                     callback(this_.handleAqiResponseBody(bodyObj));
                 } else {
                     var curl = require('curlrequest');
 
-                    curl.request({ 
-                        url: 'https://api.waqi.info/search/?keyword=' + city + '&token=' + this_.aqiToken, 
-                        verbose: true, 
-                        stderr: true 
+                    curl.request({
+                        url: 'https://api.waqi.info/search/?keyword=' + city + '&token=' + this_.aqiToken,
+                        verbose: true,
+                        stderr: true
                     }, function (err, stdout, meta) {
                         console.log(stdout);
                         bodyObj = JSON.parse(stdout);
                         callback(this_.handleAqiResponseBody(bodyObj));
                     });
-                }               
+                }
             }
         });
     },
-    
+
     handleAqiResponseBody: function(body) {
         var count = 0;
         var sumAqi = 0;
@@ -52,7 +52,7 @@ AccountabilityManager.prototype = {
                     minStation = bodyObj.data[i].station.name;
                 }
                 count++;
-            }           
+            }
         }
         if (count == 0) {
             return null;

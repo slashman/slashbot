@@ -20,6 +20,7 @@
     "mongoskin": "*",
     "node-irc": "*",
     "puppeteer": "^1.0.0",
+    "request": "^2.83.0",
     "require": "*",
     "slack-client": "^2.0.4",
     "twitter": "^1.7.0",
