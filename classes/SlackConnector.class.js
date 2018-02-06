@@ -62,8 +62,6 @@ SlackConnector.prototype = {
             }
             */
             // Listens to all `message` events from the team
-            console.log('message', message);
-
             if (message.type !== 'message') {
                 console.log(`Ignoring non-message message [${message.text}]`);
                 return;
@@ -90,7 +88,7 @@ SlackConnector.prototype = {
             const updatedMessage = message;
             updatedMessage.user = user;
 
-            that.slashbot.saveMessage(message);
+            that.slashbot.saveMessage(updatedMessage);
             that.slashbot.saveOrUpdateUser(user);
         });
 
