@@ -16,7 +16,7 @@ module.exports = {
     password: 'ffoundry.MUr0IDVbPois5VgPtbYY',
     Connector: SlackConnector,
     Conversation: ConversationConnector,
-    twitter: TwitterConnector,
+    Twitter: TwitterConnector,
     storyManager: StoryManager,
     twt_consumer_secret: process.env.TWT_CONSUMER_SECRET,
     twt_consumer_key: process.env.TWT_CONSUMER_KEY,
@@ -39,7 +39,7 @@ module.exports = {
     token_uri: process.env.token_uri || '',
     auth_provider_x509_cert_url: process.env.auth_provider_x509_cert_url || '',
     client_x509_cert_url: process.env.client_x509_cert_url || '',
-    accountability: AccountabilityManager,
+    Accountability: AccountabilityManager,
     aqiToken: process.env.aqiToken,
 
 };
