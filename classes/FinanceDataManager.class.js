@@ -22,8 +22,6 @@ FinanceDataManager.prototype = {
         const FROM = moment().startOf('week').format();
         const TO = moment().format();
 
-        // console.log(`From ${FROM} to ${TO}`);
-
         googleFinance.historical(
             {
                 symbol: SYMBOL,
@@ -31,7 +29,6 @@ FinanceDataManager.prototype = {
                 to: TO
             },
             (err, results) => {
-                // console.log(results);
                 if (results && results.length > 0) {
                     const q = results[0];
                     const m = `Last week's quote from ${SYMBOL}: open: ${q.open}, high: ${q.high}, low: ${q.low}, close: ${q.close}, volume: ${q.volume}`;
