@@ -228,33 +228,35 @@ Slashbot.prototype = {
             await page.goto(`http://dle.rae.es/?w=${string}`, {
                 waitUntil: 'networkidle0',
             });
-            // const results = await page.$('div#resultados');
-            await page.screenshot({
-                path: `${string}.png`,
-            });
-            this_.request.post({
-                url: 'https://slack.com/api/files.upload',
-                formData: {
-                    token: this_.config.token,
-                    title: 'Image',
-                    filename: `${string}.png`,
-                    filetype: 'auto',
-                    channels: this_.connector.slackChannel,
-                    file: this_.fs.createReadStream(`${string}.png`),
-                },
-            }, (err, response) => {
-                if (err) {
-                    console.log(err);
-                    return;
-                }
-                console.log(JSON.parse(response.body));
-                fs.unlink(`${string}.png`, (error) => {
-                    if (error) {
-                        throw error;
-                    }
-                    console.log(`Deleted ${string}.png!!`);
-                });
-            });
+            const resultsText = await page.$eval('div#resultados', e => e.innerText);
+            this_.share(resultsText);
+            this_.share(`http://dle.rae.es/?w=${string}`);
+            // await page.screenshot({
+            //     path: `${string}.png`,
+            // });
+            // this_.request.post({
+            //     url: 'https://slack.com/api/files.upload',
+            //     formData: {
+            //         token: this_.config.token,
+            //         title: 'Image',
+            //         filename: `${string}.png`,
+            //         filetype: 'auto',
+            //         channels: this_.connector.slackChannel,
+            //         file: this_.fs.createReadStream(`${string}.png`),
+            //     },
+            // }, (err, response) => {
+            //     if (err) {
+            //         console.log(err);
+            //         return;
+            //     }
+            //     console.log(JSON.parse(response.body));
+            //     fs.unlink(`${string}.png`, (error) => {
+            //         if (error) {
+            //             throw error;
+            //         }
+            //         console.log(`Deleted ${string}.png!!`);
+            //     });
+            // });
 
             await browser.close();
         })();
