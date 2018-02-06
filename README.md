@@ -7,6 +7,14 @@ Running it
 - Install and run a mongoDB instance locally (https://docs.mongodb.com/manual/installation/)
 - Type `npm install` and then  `npm start`
 
+Features (TBD)
+==============
+
+### Financial Quotes
+Get quick insight from stock and other financial markets. 
+
+Usage: "need quote from NASDAQ:AAPL" will print "Last week's quote from NASDAQ:AAPL: open: 159.1, high: 163.88, low: 156, close: 156.49, volume: 72738522".  
+
 ## Development Configuration
 
 The purpose of this section is to provide information about how the developers that are interested in collaborate with this proyect can set up their editor to fit better with the code style

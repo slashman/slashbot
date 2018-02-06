@@ -4,6 +4,7 @@ const util = require('util');
 const request = require('request');
 const fs = require('fs');
 const StoryManager = require('./StoryManager.class');
+const FinanceDataManager = require('./FinanceDataManager.class');
 
 function Slashbot(config) {
     this.version = '0.1';
@@ -19,6 +20,7 @@ function Slashbot(config) {
     this.conversation = new config.Conversation(config);
     this.persistence = new config.Persistence(config);
     this.storyManager = new StoryManager(config);
+    this.financeManager = new FinanceDataManager(config);
     this.invitationExtended = false;
     this.currentPlayerIndex = 0;
     this.inviteAcceptResponses = ['yes', 'accept', "I'll go", 'alright', 'sure'];
@@ -48,6 +50,7 @@ Slashbot.prototype = {
         this.persistence.init();
         this.connector.init(this);
         this.storyManager.init(this);
+        this.financeManager.init(this);
         this.conversation.init();
     },
 
@@ -89,6 +92,8 @@ Slashbot.prototype = {
             this.storyManager.manageInvitation(true);
         } else if (this.invitationExtended && from.name === this.currentPlayer && contains(this.inviteDeclineResponses, text)) {
             this.storyManager.manageInvitation(false);
+        } else if (text.indexOf('need quote from') === 0) {
+            this.financeManager.postTodays(text.substring('need quote from '.length));
         } else if (text.indexOf('bot') === 0) {
             if (text.indexOf('introduce yourself') > -1) {
                 this._introduce(from.name);
