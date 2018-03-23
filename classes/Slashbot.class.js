@@ -94,7 +94,10 @@ Slashbot.prototype = {
             this.storyManager.manageInvitation(false);
         } else if (text.indexOf('need quote from') === 0) {
             this.financeManager.postTodays(text.substring('need quote from '.length));
-        } else if (text.indexOf('bot') === 0) {
+        } else if (text.indexOf('dice') === 0 || text.indexOf('throw') === 0) {
+            this._dice(from.name, text);
+        }
+        else if (text.indexOf('bot') === 0) {
             if (text.indexOf('introduce yourself') > -1) {
                 this._introduce(from.name);
             } else if (text.indexOf('about') > -1) {
@@ -123,8 +126,6 @@ Slashbot.prototype = {
                 this.storyManager.currentTurn();
             } else if (text.indexOf('turn mode') > -1) {
                 this.storyManager.changeTurnMode();
-            } else if (text.indexOf('dice') > -1 || text.indexOf('throw') > -1) {
-                this._dice(from.name, text);
             } else {
                 this._wtf(from.name);
             }
