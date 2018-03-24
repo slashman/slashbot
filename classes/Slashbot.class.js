@@ -75,6 +75,10 @@ Slashbot.prototype = {
         } else if (text.indexOf('correct:') === 0) {
             const storyText = text.substring('correct:'.length);
             this.storyManager.correctStoryPart(from.name, storyText);
+        } else if (this.invitationExtended && from.name === this.currentPlayer && contains(this.inviteAcceptResponses, text)) {
+            this.storyManager.manageInvitation(true);
+        } else if (this.invitationExtended && from.name === this.currentPlayer && contains(this.inviteDeclineResponses, text)) {
+            this.storyManager.manageInvitation(false);
         } else if (text.toLowerCase().indexOf('skynet') === 0) {
             const conversationPiece = text.substring('skynet '.length);
             this._converse(conversationPiece);
@@ -88,10 +92,6 @@ Slashbot.prototype = {
             this._img_search(text.substring('i '.length));
         } else if (text.toLowerCase().indexOf('def ') === 0) {
             this._define(text.substring('def '.length));
-        } else if (this.invitationExtended && from.name === this.currentPlayer && contains(this.inviteAcceptResponses, text)) {
-            this.storyManager.manageInvitation(true);
-        } else if (this.invitationExtended && from.name === this.currentPlayer && contains(this.inviteDeclineResponses, text)) {
-            this.storyManager.manageInvitation(false);
         } else if (text.indexOf('need quote from') === 0) {
             this.financeManager.postTodays(text.substring('need quote from '.length));
         } else if (text.indexOf('dice') === 0 || text.indexOf('throw') === 0) {
@@ -104,8 +104,6 @@ Slashbot.prototype = {
                 this._about(from.name);
             } else if (text.toLowerCase().indexOf('first') > -1) {
                 this._first_message(from);
-            } else if (text.indexOf('help') > -1) {
-                this.storyManager.help(from.name);
             } else if (text.indexOf('creator') > -1) {
                 this._creator();
             } else if (text.indexOf('latest') > -1) {
@@ -126,6 +124,8 @@ Slashbot.prototype = {
                 this.storyManager.currentTurn();
             } else if (text.indexOf('turn mode') > -1) {
                 this.storyManager.changeTurnMode();
+            } else if (text.indexOf('help') > -1) {
+                this.storyManager.help(from.name);
             } else {
                 this._wtf(from.name);
             }
