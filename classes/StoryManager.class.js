@@ -7,10 +7,11 @@ function StoryManager(config){
 }
 
 StoryManager.prototype = {
-    
-    init: function(slashbot){
+
+    init (slashbot) {
         this.bot = slashbot;
         this.currentStoryFragments = [];
+        return this;
     },
 
     newStory: function(text){
@@ -20,10 +21,10 @@ StoryManager.prototype = {
             return;
         }
         var this_ = this;
-        
+
         this.bot.persistence.createStory(storyName, function(story){
             if (!story) throw 'story was not created';
-            
+
             this_.story = story;
             this_.bot.share('Let\'s create the story "'+this_.story.name+'"');
             this_.currentStoryFragments = this_.story.fragments;
@@ -41,7 +42,7 @@ StoryManager.prototype = {
             return;
         }
         var this_ = this;
-        this.bot.persistence.getStory(storyPIN, 
+        this.bot.persistence.getStory(storyPIN,
             function (story){
                 this_.story = story;
                 if (!this_.story){
@@ -64,8 +65,8 @@ StoryManager.prototype = {
             author: from,
             story: storyText
         };
-        this.currentStoryFragments.push(storypart); 
-        this.saveStory();  
+        this.currentStoryFragments.push(storypart);
+        this.saveStory();
         this.bot.share("Added " +  from + "'s contribution.");
     },
 
@@ -86,11 +87,11 @@ StoryManager.prototype = {
         } else {
             this.bot.say(from, "Sorry, only "+storypart.author+" can correct his fragment.");
         }
-    }, 
+    },
 
     listStories: function (text){
         var this_ = this;
-        this.bot.persistence.getStoriesList( 
+        this.bot.persistence.getStoriesList(
             function(stories){
                 if (!stories || stories.length == 0){
                     this_.bot.share('I know no stories. Create one with `bot new story` ');
@@ -110,7 +111,7 @@ StoryManager.prototype = {
             this.bot.share("The current story has not begun");
             return;
         }
-        
+
         var frags = [];
         for (var i = 0; i < this.currentStoryFragments.length; i++){
             frags.push(this.currentStoryFragments[i].story);
@@ -133,31 +134,31 @@ StoryManager.prototype = {
             } else {
                 this.bot.say(who, chunked_frags[i]);
             }
-        }       
+        }
     },
 
     manageInvitation: function(accepted) {
-        this.invitationExtended = false;        
+        this.invitationExtended = false;
 
         if(!accepted) {
-            this.bot.share("Well that sucks...");           
-            console.log(this.currentPlayer + " has declined the invitation to write. Moving on");           
-            
+            this.bot.share("Well that sucks...");
+            console.log(this.currentPlayer + " has declined the invitation to write. Moving on");
+
             if (this.turnModes[this.turnMode] === 'roundRobin' && this.lastTurn >= this.bot.players.length) {
                 this.lastTurn = 0;
                 this.bot.share("Round complete.");
             }
-            else {          
+            else {
                 this.nextTurn();
-            }   
+            }
         } else {
             this.bot.share("Alright! That's the spirit. Take it away, @" + this.currentPlayer + "!");
-            console.log(this.bot.currentPlayer + " has accepted the invitation to write."); 
-        }   
+            console.log(this.bot.currentPlayer + " has accepted the invitation to write.");
+        }
 
     },
 
-    currentTurn: function(){       
+    currentTurn: function(){
         this.bot.share("@" + this.currentPlayer + " is working on the story.");
     },
 
@@ -169,7 +170,7 @@ StoryManager.prototype = {
             this.invitationExtended = false;
             invitationMessage = "Invitation to @" + this.currentPlayer + " cancelled. ";
         }
-        
+
         this.turnMode++;
         if(this.turnMode == this.turnModes.length)
             this.turnMode = 0;
@@ -181,12 +182,12 @@ StoryManager.prototype = {
             this.bot.share("Still no word from @" + this.currentPlayer + "...");
             this.invitationExtended = false;
             return;
-        }       
+        }
 
         var playerIndex = 0;
         var turnMode = this.turnModes[this.turnMode];
         console.log("Choosing among " + this.bot.players.length + " players...");
-        
+
         if(turnMode === 'roundRobin'){
             playerIndex = this.lastTurn;
             this.lastTurn++;
@@ -208,7 +209,7 @@ StoryManager.prototype = {
         this.bot.say(who, "[bot latest] Gets the latest fragment");
         this.bot.say(who, "[bot story so far] Gets the complete story.");
         this.bot.say(who, "[bot next turn] Suggest who should do the next turn.");
-        this.bot.say(who, "[bot current turn] Shows the player whose turn it is."); 
+        this.bot.say(who, "[bot current turn] Shows the player whose turn it is.");
         this.bot.say(who, "[bot list stories] Shows the stories known by the bot.");
         this.bot.say(who, "[bot new story] Creates a new story and sets it as current.");
         this.bot.say(who, "[bot set story] Sets a story as the current one..");

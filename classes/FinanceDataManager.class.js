@@ -11,8 +11,9 @@ function FinanceDataManager(config) {
 
 FinanceDataManager.prototype = {
 
-    init: (slashbot) => {
+    init: function (slashbot) {
         this.bot = slashbot;
+        return this;
     },
 
     postTodays: (SYMBOL) => {

@@ -5,6 +5,7 @@ const request = require('request');
 const fs = require('fs');
 const StoryManager = require('./StoryManager.class');
 const FinanceDataManager = require('./FinanceDataManager.class');
+const ManagerRegistry = require('./ManagerRegistry.class');
 
 function Slashbot(config) {
     this.version = '0.1';
@@ -31,6 +32,7 @@ function Slashbot(config) {
     this.puppeteer = puppeteer;
     this.request = request;
     this.fs = fs;
+    this.managerRegistry = new ManagerRegistry(config);
 }
 
 function contains(array, text) {
@@ -49,9 +51,13 @@ Slashbot.prototype = {
     start() {
         this.persistence.init();
         this.connector.init(this);
-        this.storyManager.init(this);
-        this.financeManager.init(this);
         this.conversation.init();
+
+        console.log('Registering story manager.');
+        this.managerRegistry.register(this.storyManager.init(this));
+        console.log('Registering finance manager.');
+        this.managerRegistry.register(this.financeManager.init(this));
+
     },
 
     channelJoined(channel, who) {
@@ -66,6 +72,9 @@ Slashbot.prototype = {
     },
 
     message(from, text) {
+
+        this.managerRegistry.processMessage(from, text);
+
         if (!text) {
             return;
         }
