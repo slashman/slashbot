@@ -11,8 +11,8 @@ function FinanceDataManager(config) {
 
 FinanceDataManager.prototype = {
 
-    init: function (slashbot) {
-        this.bot = slashbot;
+    init: function (obibot) {
+        this.bot = obibot;
         return this;
     },
 

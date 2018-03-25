@@ -28,7 +28,7 @@ function Slashbot(config) {
     this.inviteDeclineResponses = ['no', 'decline', 'pass', 'busy', 'meeting', 'working'];
     this.images_client = new ImagesClient(config.cseId, config.cseKey);
     this.twitter = new config.Twitter(config);
-    this.accountability = new config.Accountability(config);
+    this.accountabilityManager = new config.Accountability(config);
     this.puppeteer = puppeteer;
     this.request = request;
     this.fs = fs;
@@ -57,6 +57,8 @@ Slashbot.prototype = {
         this.managerRegistry.register(this.storyManager.init(this));
         console.log('Registering finance manager.');
         this.managerRegistry.register(this.financeManager.init(this));
+        console.log('Registering accountability manager.');
+        this.managerRegistry.register(this.accountabilityManager.init(this));
 
     },
 
@@ -84,9 +86,6 @@ Slashbot.prototype = {
         } else if (text.toLowerCase().indexOf('tweet') === 0) {
             const conversationPiece = text.substring('tweet '.length);
             this._tweet(from, conversationPiece);
-        } else if (text.toLowerCase().indexOf('aqi') === 0) {
-            const conversationPiece = text.substring('aqi '.length);
-            this._aqi(from, conversationPiece);
         } else if (text.toLowerCase().indexOf('i ') === 0) {
             this._img_search(text.substring('i '.length));
         } else if (text.toLowerCase().indexOf('def ') === 0) {
@@ -105,24 +104,6 @@ Slashbot.prototype = {
                 this._creator();
             } else if (text.indexOf('latest') > -1) {
                 this._latest(from.name);
-            } else if (text.indexOf('story so far') > -1) {
-                this.storyManager.fullStory(from.name);
-            } else if (text.indexOf('new story') > -1) {
-                this.storyManager.newStory(text);
-            } else if (text.indexOf('set story') > -1) {
-                this.storyManager.setStory(text);
-            } else if (text.indexOf('list stories') > -1) {
-                this.storyManager.listStories();
-            } else if (text.indexOf('share the story') > -1) {
-                this.storyManager.fullStory(false);
-            } else if (text.indexOf('next turn') > -1) {
-                this.storyManager.nextTurn();
-            } else if (text.indexOf('current turn') > -1) {
-                this.storyManager.currentTurn();
-            } else if (text.indexOf('turn mode') > -1) {
-                this.storyManager.changeTurnMode();
-            } else if (text.indexOf('help') > -1) {
-                this.storyManager.help(from.name);
             } else {
                 this._wtf(from.name);
             }
@@ -281,25 +262,6 @@ Slashbot.prototype = {
                 });
             },
         );
-    },
-
-    _aqi(who, city) {
-        const this_ = this;
-        // console.log('https://api.waqi.info/search/?keyword='+city+'&token=30ba56606e67af7b9e9993df62e8071864ef9b4e');
-        this.accountability.retrieveAqi(who, city, (result) => {
-            if (!result) {
-                this_.share('The stations are not transmitting data.');
-                return;
-            }
-            this_.share(`min = ${result.min} max = ${result.max} avg = ${result.avg}`);
-            this_.share(`minStation = ${result.minStation}\nmaxStation = ${result.maxStation}`);
-            if (city === 'bogota') {
-                this_._tweet(who, `Qué está haciendo @EnriquePenalosa? #Polución Bogotana en ${result.max} AQI! http://aqicn.org/map/bogota/#@g/4.6187/-74.1907/11z`);
-            }
-            if (city === 'medellín') {
-                this_._tweet(who, `Qué pasa en #Medellín y el #ValleDeAburrá @FicoGutierrez? la #Polución esta en ${result.max} AQI! http://aqicn.org/map/colombia/medellin/#@g/6.208/-75.5957/12z`);
-            }
-        });
     },
 
     _first_message(who) {

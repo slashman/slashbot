@@ -26,6 +26,26 @@ StoryManager.prototype = {
             this.manageInvitation(true);
         } else if (this.invitationExtended && from.name === this.currentPlayer && contains(this.inviteDeclineResponses, text)) {
             this.manageInvitation(false);
+        } else if (text.indexOf('bot') === 0) {
+            if (text.indexOf('story so far') > -1) {
+                this.fullStory(from.name);
+            } else if (text.indexOf('new story') > -1) {
+                this.newStory(text);
+            } else if (text.indexOf('set story') > -1) {
+                this.setStory(text);
+            } else if (text.indexOf('list stories') > -1) {
+                this.listStories();
+            } else if (text.indexOf('share the story') > -1) {
+                this.fullStory(false);
+            } else if (text.indexOf('next turn') > -1) {
+                this.nextTurn();
+            } else if (text.indexOf('current turn') > -1) {
+                this.currentTurn();
+            } else if (text.indexOf('turn mode') > -1) {
+                this.changeTurnMode();
+            } else if (text.indexOf('help') > -1) {
+                this.help(from.name);
+            }
         }
     },
 
