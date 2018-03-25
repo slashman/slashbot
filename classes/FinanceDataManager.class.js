@@ -16,6 +16,12 @@ FinanceDataManager.prototype = {
         return this;
     },
 
+    trigger: function(from, text) {
+        if (text.indexOf('need quote from') === 0) {
+            this.postTodays(text.substring('need quote from '.length));
+        }
+    },
+
     postTodays: (SYMBOL) => {
 
         const _this = this;

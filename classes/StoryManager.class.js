@@ -14,6 +14,21 @@ StoryManager.prototype = {
         return this;
     },
 
+    // This function determines which lines
+    trigger: function(from, text) {
+        if (text.indexOf('story:') === 0) {
+            const storyText = text.substring('story:'.length);
+            this.addStoryPart(from.name, storyText);
+        } else if (text.indexOf('correct:') === 0) {
+            const storyText = text.substring('correct:'.length);
+            this.correctStoryPart(from.name, storyText);
+        } else if (this.invitationExtended && from.name === this.currentPlayer && contains(this.inviteAcceptResponses, text)) {
+            this.manageInvitation(true);
+        } else if (this.invitationExtended && from.name === this.currentPlayer && contains(this.inviteDeclineResponses, text)) {
+            this.manageInvitation(false);
+        }
+    },
+
     newStory: function(text){
         var storyName = text.substr(text.indexOf("new story")+"new story".length+1);
         if (!storyName || storyName.trim() === ''){

@@ -78,17 +78,7 @@ Slashbot.prototype = {
         if (!text) {
             return;
         }
-        if (text.indexOf('story:') === 0) {
-            const storyText = text.substring('story:'.length);
-            this.storyManager.addStoryPart(from.name, storyText);
-        } else if (text.indexOf('correct:') === 0) {
-            const storyText = text.substring('correct:'.length);
-            this.storyManager.correctStoryPart(from.name, storyText);
-        } else if (this.invitationExtended && from.name === this.currentPlayer && contains(this.inviteAcceptResponses, text)) {
-            this.storyManager.manageInvitation(true);
-        } else if (this.invitationExtended && from.name === this.currentPlayer && contains(this.inviteDeclineResponses, text)) {
-            this.storyManager.manageInvitation(false);
-        } else if (text.toLowerCase().indexOf('skynet') === 0) {
+        if (text.toLowerCase().indexOf('skynet') === 0) {
             const conversationPiece = text.substring('skynet '.length);
             this._converse(conversationPiece);
         } else if (text.toLowerCase().indexOf('tweet') === 0) {
@@ -101,8 +91,6 @@ Slashbot.prototype = {
             this._img_search(text.substring('i '.length));
         } else if (text.toLowerCase().indexOf('def ') === 0) {
             this._define(text.substring('def '.length));
-        } else if (text.indexOf('need quote from') === 0) {
-            this.financeManager.postTodays(text.substring('need quote from '.length));
         } else if (text.indexOf('dice') === 0 || text.indexOf('throw') === 0) {
             this._dice(from.name, text);
         }

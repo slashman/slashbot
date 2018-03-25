@@ -17,8 +17,11 @@ ManagerRegistry.prototype = {
         this.managers[manager.name] = manager;
     },
 
-    processMessage() {
-
+    processMessage(from, text) {
+        console.log('managers', this.managers);
+        for (const managerName of Object.keys(this.managers)) {
+            this.managers[managerName].trigger(from, text);
+        }
     }
 
 }
