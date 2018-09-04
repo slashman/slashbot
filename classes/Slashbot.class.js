@@ -86,7 +86,7 @@ Slashbot.prototype = {
         } else if (text.toLowerCase().indexOf('tweet') === 0) {
             const conversationPiece = text.substring('tweet '.length);
             this._tweet(from, conversationPiece);
-        } else if (text.toLowerCase().indexOf('i ') === 0) {
+        } else if (text.indexOf('i ') === 0) {
             this._img_search(text.substring('i '.length));
         } else if (text.toLowerCase().indexOf('def ') === 0) {
             this._define(text.substring('def '.length));
