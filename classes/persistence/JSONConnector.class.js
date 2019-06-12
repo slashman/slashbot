@@ -11,7 +11,16 @@ JSONConnector.prototype = {
 			fs.readFile("data.json", "utf8", function (err, data) {
 				if (err) 
 					throw err;
-				connector.masterData = JSON.parse(data);
+				if(data.length > 0) {
+					connector.masterData = JSON.parse(data);	
+				} else {
+					connector.masterData = {
+						currentPIN: 1,
+						stories: new Array()
+					}
+					connector._saveAll();
+				}
+				
 			});
 		} else {
 			this.masterData = {

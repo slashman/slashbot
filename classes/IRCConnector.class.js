@@ -8,6 +8,7 @@ function IRCConnector(config){
 }
 
 IRCConnector.prototype = {
+	
 	init: function(slashbot){
 		var that = this;
 		this.client = new irc.Client(this.config.server, this.config.botName, {
@@ -30,9 +31,11 @@ IRCConnector.prototype = {
 		    console.log('error: ', message);
 		});
 	},
+	
 	say: function(who, text){
 		this.client.notice(who, text);
 	},
+	
 	share: function (text){
 		this.client.say(this.channel, text);
 	}

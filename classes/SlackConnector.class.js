@@ -1,96 +1,145 @@
-var Slack = require('slack-client');
 
-function SlackConnector(config){
-	this.name = 'SlackConnector';
-	this.token = config.token;
-	this.autoReconnect = config.autoReconnect;
-	this.autoMark = config.autoMark;
-	this.config = config;
+const Slack = require('@slack/client');
+const { CLIENT_EVENTS } = require('@slack/client');
+const { RTM_EVENTS } = require('@slack/client');
+// console.log(Slack);
+function SlackConnector(config) {
+    this.name = 'SlackConnector';
+    this.token = config.token;
+    this.autoReconnect = config.autoReconnect;
+    this.autoMark = config.autoMark;
+    this.config = config;
     this.slack = null;
     this.activeUsersArray = [];
     this.slashbot = null;
     this.slackChannel = null;
-
+    this.rtm = null;
 }
 
 SlackConnector.prototype = {
-	init: function(slashbot){
-		var that = this;
-		this.slashbot = slashbot;
-		console.log("Initializing with SlackConnector...");
-		var slack = new Slack(this.token, this.autoReconnect, this.autoMark);
-		slack.on('open', function() {
-			var channelName = that.config.channel;
-			var slackChannel = null;
-			for (key in slack.channels) {
-				console.log("Channel: "+slack.channels[key].name);
-				if (/*slack.channels[key].is_member && */slack.channels[key].name === channelName) {
-					slackChannel = slack.channels[key];
-				}
-			}
-			if (!slackChannel){
-				/*if (slack.groups[channelName].is_open && !slack.groups[channelName].is_archived) {
-					slackChannel = slack.groups[channelName];
-				} else { 
-					console.log("Error: Channel or group ["+that.config.channel+"] not found or inaccessible by user");
-					return;
-				}*/
-				console.log("Error: Channel ["+channelName+"] not found or inaccessible");
-				return;
-			} else if (!slackChannel.is_member) {
-				console.log("Error: Bot is not member of channel ["+channelName+"]");
-				return;
-			}
-			that.slackChannel = slackChannel;
-			that._registerAllChannelMembers(slackChannel);
-			console.log('Welcome to Slack. You are @%s of %s', slack.self.name, slack.team.name);
-			console.log('You are in: %s', channelName);
-			
-		});
 
-		slack.on('message', function(message){
-			if (message.type != 'message'){
-				console.log("Ignoring non-message message ["+message.text+"]")
-				return;
-			} 
-		    var user = slack.getUserByID(message.user);
-		    var text = message.text;
-			if (!user){
-				console.log("Error: user ["+message.user+"] not found.")
-				return;
-			}
-			slashbot.message(user.name, text);
-			if(that.activeUsersArray.indexOf(user.name) == -1){
-				that.activeUsersArray.push(user.name);
-			}
-			that.slashbot.registerPlayers(that.activeUsersArray);
-		});
+    init(slashbot) {
+        const that = this;
+        this.slashbot = slashbot;
+        console.log('Initializing with SlackConnector...');
 
-		slack.on('error', function(error) {
-			console.error('Error: %s', error);
-		});
+        const { RtmClient } = Slack;
 
-		slack.login();
-		this.slack = slack;
-	},
-	say: function(who, text){
-		console.log(typeof who);
-		console.log("Saying: " + text + " to " + who);
-		var dm = this.slack.getChannelGroupOrDMByName(who);
-		dm.send(text);
-	},
-	share: function(text){
-		console.log("Sharing: " + text);
-		this.slackChannel.send(text);
-	},
-	_registerAllChannelMembers: function (channel){
-		for(var i = 0; i < channel.members.length; i++){
-			if(this.slack.getUserByID(channel.members[i]).presence == 'active'){
-				this.activeUsersArray.push(this.slack.getUserByID(channel.members[i]).name);							
-			}
-		}
-		this.slashbot.registerPlayers(this.activeUsersArray);
-	}
-}
+        const { WebClient } = Slack;
+
+        if (this.config.webapiTestToken) {
+            this.web = new WebClient(this.config.webapiTestToken, { logLevel: 'info' });
+        }
+
+        this.rtm = new RtmClient(this.token, { logLevel: 'info' });
+
+        this.rtm.start();
+
+        this.rtm.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (rtmStartData) => {
+            console.log(`Logged in as ${rtmStartData.self.name} of team ${rtmStartData.team.name}, but not yet connected to a channel`);
+        });
+
+        this.rtm.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, () => {
+            // Get the user's name
+            const user = that.rtm.dataStore.getUserById(that.rtm.activeUserId);
+
+            // Get the team's name
+            const team = that.rtm.dataStore.getTeamById(that.rtm.activeTeamId);
+
+            // Log the slack team name and the bot's name
+            console.log(`Connected to ${team.name} as ${user.name}`);
+        });
+
+        this.rtm.on(RTM_EVENTS.MESSAGE, (message) => {
+            /**
+            {
+                type: 'message',
+                channel: 'C1DKYBV8E',
+                user: 'U03DJ7SJZ',
+                text: 'test',
+                ts: '1464880174.000004',
+                team: 'T03DJ7SJV'
+            }
+            */
+            // Listens to all `message` events from the team
+            if (message.type !== 'message') {
+                console.log(`Ignoring non-message message [${message.text}]`);
+                return;
+            }
+
+            const user = that.rtm.dataStore.getUserById(message.user);
+
+            if (!user) {
+                console.log(`Error: user [${message.user}] not found.`);
+                return;
+            }
+
+            if (message.channel) that.slackChannel = message.channel;
+
+            slashbot.message(user, message.text);
+
+            if (that.activeUsersArray.indexOf(user.name) === -1) {
+                that.activeUsersArray.push(user.name);
+            }
+
+            that.slashbot.registerPlayers(that.activeUsersArray);
+
+            // Replace the user id for the entire user object to be stored:
+            const updatedMessage = message;
+            updatedMessage.user = user;
+
+            that.slashbot.saveMessage(updatedMessage);
+            that.slashbot.saveOrUpdateUser(user);
+        });
+
+        this.rtm.on(RTM_EVENTS.PRESENCE_CHANGE, (presenceChange) => {
+            console.log('presenceChange', presenceChange);
+        });
+    },
+
+    say(who, text) {
+        console.log(typeof who);
+        console.log(`Saying: ${text} to ${who}`);
+        const dm = this.rtm.dataStore.getDMByName(who);
+        if (!dm) {
+            this.rtm.sendMessage(text, this.slackChannel);
+            return;
+        }
+        this.rtm.sendMessage(text, dm.id);
+    },
+
+    share(text) {
+        console.log(`Sharing: ${text}`);
+        console.log('channel', this.slackChannel);
+        this.rtm.sendMessage(text, this.slackChannel);
+    },
+
+    _registerAllChannelMembers(channel) {
+        for (let i = 0; i < channel.members.length; i += 1) {
+            if (this.slack.getUserByID(channel.members[i]).presence === 'active') {
+                this.activeUsersArray.push(this.slack.getUserByID(channel.members[i]).name);
+            }
+        }
+        this.slashbot.registerPlayers(this.activeUsersArray);
+    },
+
+    postImageAttachment(imageUrl) {
+        const att2 = {
+            color: '#764FA5',
+            image_url: imageUrl,
+        };
+
+        const msgpack = {
+            type: 'message',
+            text: imageUrl,
+            channel: this.slackChannel,
+            attachments: [att2],
+        };
+        console.log(this.slackChannel);
+        this.web._makeAPICall('chat.postMessage', msgpack, (err, res) => {
+            console.error('postMessage result:', err, res);
+        });
+    },
+};
 
 module.exports = SlackConnector;
