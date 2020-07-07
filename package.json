@@ -21,7 +21,7 @@
     "mongodb": "^2.1.16",
     "mongoskin": "*",
     "node-irc": "*",
-    "npm": "^5.8.0",
+    "npm": "^6.14.6",
     "puppeteer": "^1.0.0",
     "request": "^2.83.0",
     "require": "*",
