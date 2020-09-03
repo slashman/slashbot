@@ -22,7 +22,7 @@
     "mongoskin": "*",
     "node-irc": "*",
     "npm": "^5.8.0",
-    "puppeteer": "^1.0.0",
+    "puppeteer": "^1.13.0",
     "request": "^2.83.0",
     "require": "*",
     "slack-client": "^2.0.4",
